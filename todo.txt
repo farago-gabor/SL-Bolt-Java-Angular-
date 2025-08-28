@@ -1,4 +1,8 @@
 Todo:
+	- A dolgozó a saját szerepkörét ne tudja átírni, illetve ne tudja saját magát kitörölni
+
+
+DONE:
 	- A DTO-nem jól működik, curl parancsra hozzáadja az adatbázishoz az új elemet, de nem írja ki
 		- pl.: curl -X POST http://localhost:8080/api/dolgozok ^
 			More?  -H "Authorization: Bearer TOKENNÉV^
@@ -6,4 +10,12 @@ Todo:
 			More?  -d "email=teszt@bolt.hu" ^
 			More?  -d "jelszo=teszt123"
 			{"id":0,"nev":null,"email":null,"szerepkor":null}
-	- A dolgozó a saját szerepkörét ne tudja átírni, illetve ne tudja saját magát kitörölni
+		- SZÓVAL: valamiért a mapstruct nem jól működik (pom.xml-nél valamiért az annotációk nem jók valószínűleg)
+		- mvn clean compile-nál rosszul generálja le az annotációkat
+		
+		MEGOLDÁSA: hozzá kellett adni az AnnotaitionProcessorPath-hoz ezt:
+					<path>
+						<groupId>org.projectlombok</groupId>
+						<artifactId>lombok-mapstruct-binding</artifactId>
+						<version>0.2.0</version>
+					</path>

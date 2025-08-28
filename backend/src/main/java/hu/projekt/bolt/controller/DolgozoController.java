@@ -1,6 +1,8 @@
 package hu.projekt.bolt.controller;
 
 import hu.projekt.bolt.dto.DolgozoDTO;
+import hu.projekt.bolt.mapper.DolgozoMapper;
+import hu.projekt.bolt.model.Dolgozo;
 import hu.projekt.bolt.service.DolgozoServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.List;
 public class DolgozoController {
 
     private final DolgozoServiceImpl dolgozoService;
+    private final DolgozoMapper dolgozoMapper;
 
     private boolean isAdmin() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -101,6 +104,18 @@ public class DolgozoController {
 
         DolgozoDTO dolgozo = dolgozoService.getDolgozoById(id);
         return ResponseEntity.ok(dolgozo);
+    }
+
+
+    @GetMapping("/testmap")
+    public DolgozoDTO testMapping() {
+        Dolgozo d = new Dolgozo();
+        d.setId(1);
+        d.setNev("Anna");
+        d.setEmail("anna@bolt.hu");
+        d.setSzerepkor("admin");
+
+        return dolgozoMapper.toDto(d);
     }
 
 }

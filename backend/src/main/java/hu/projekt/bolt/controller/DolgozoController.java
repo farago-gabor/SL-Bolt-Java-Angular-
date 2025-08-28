@@ -16,21 +16,24 @@ import java.util.List;
 public class DolgozoController {
 
     private final DolgozoServiceImpl dolgozoService;
-
+    // Ez az auth-ban lesz megvalósítva
+    /*
     private boolean isAdmin(HttpSession session) {
         String role = (String) session.getAttribute("role");
         return "ADMIN".equals(role);
     }
-
+    */
     // Új dolgozó hozzáadása (POST)
     @PostMapping
     public String ujDolgozo(@RequestParam String nev,
                             @RequestParam String email,
                             @RequestParam String jelszo,
                             HttpSession session, Model model) {
+        /*
         if (!isAdmin(session)) {
             return "redirect:/"; // Redirect to login or error page
         }
+         */
 
         DolgozoDTO newDolgozo = dolgozoService.ujDolgozo(nev, email, jelszo);
         model.addAttribute("dolgozo", newDolgozo);
@@ -43,9 +46,11 @@ public class DolgozoController {
             @PathVariable Long id,
             @RequestBody DolgozoDTO dolgozoDTO,
             HttpSession session) {
+        /*
         if (!isAdmin(session)) {
             return ResponseEntity.status(403).build(); // Forbidden if not an admin
         }
+         */
 
         DolgozoDTO updatedDolgozo = dolgozoService.modositDolgozo(id, dolgozoDTO.getNev(), dolgozoDTO.getEmail(), dolgozoDTO.getSzerepkor());
         return ResponseEntity.ok(updatedDolgozo);
@@ -57,9 +62,11 @@ public class DolgozoController {
             @PathVariable Long id,
             @RequestParam String ujJelszo,
             HttpSession session) {
+        /*
         if (!isAdmin(session)) {
             return ResponseEntity.status(403).build(); // Forbidden if not an admin
         }
+        */
 
         DolgozoDTO updatedDolgozo = dolgozoService.modositJelszo(id, ujJelszo);
         return ResponseEntity.ok(updatedDolgozo);
@@ -68,9 +75,11 @@ public class DolgozoController {
     // Dolgozó törlése (DELETE)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> torolDolgozo(@PathVariable Long id, HttpSession session) {
+        /*
         if (!isAdmin(session)) {
             return ResponseEntity.status(403).build(); // Forbidden if not an admin
         }
+        */
 
         dolgozoService.torolDolgozo(id);
         return ResponseEntity.noContent().build();
@@ -79,9 +88,11 @@ public class DolgozoController {
     // Összes dolgozó lekérdezése (GET)
     @GetMapping
     public ResponseEntity<List<DolgozoDTO>> osszesDolgozo(HttpSession session) {
+        /*
         if (!isAdmin(session)) {
             return ResponseEntity.status(403).build(); // Forbidden if not an admin
         }
+        */
 
         List<DolgozoDTO> dolgozok = dolgozoService.osszesDolgozo();
         return ResponseEntity.ok(dolgozok);
@@ -90,9 +101,11 @@ public class DolgozoController {
     // Egy dolgozó lekérdezése ID alapján (GET)
     @GetMapping("/{id}")
     public ResponseEntity<DolgozoDTO> getDolgozoById(@PathVariable Long id, HttpSession session) {
+        /*
         if (!isAdmin(session)) {
             return ResponseEntity.status(403).build(); // Forbidden if not an admin
         }
+        */
 
         DolgozoDTO dolgozo = dolgozoService.getDolgozoById(id);
         return ResponseEntity.ok(dolgozo);

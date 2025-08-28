@@ -1,6 +1,6 @@
 package hu.projekt.bolt.security;
 
-// Generál és validálja JWT-t
+// Generálja és validálja JWT-t
 
 import org.springframework.stereotype.Component;
 

@@ -14,7 +14,7 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    private final String JWT_KULCS = "kulcs";
+    private final String JWT_KULCS = "HosszabbKulcsKellHogyNeKapjakErrort";
     private final long jwtLejarat = 86400000; // A kulcs lejáratának ideje (1 nap)
 
     public String generateToken(Dolgozo dolgozo) {

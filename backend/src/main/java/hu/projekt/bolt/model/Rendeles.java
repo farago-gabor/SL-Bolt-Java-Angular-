@@ -37,6 +37,7 @@ public class Rendeles {
     private LocalDate felvetelDatum;
 
     // Hogy egyszerűbb legyen egy adott rendelés árucikkjeinek az elérése
+    // Lehet hogy átrakom a DTO-ba, hogy a model megegyezzen az adatbázis táblájával
     @OneToMany(mappedBy = "rendeles", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RendelesTetel> tetelek = new ArrayList<>();
 }

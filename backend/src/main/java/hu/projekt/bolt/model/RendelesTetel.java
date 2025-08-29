@@ -12,13 +12,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RendelesTetel {
 
-    @Id
+    @EmbeddedId
+    private RendelesTetelId id;
+
     @ManyToOne
+    @MapsId("rendelesId")
     @JoinColumn(name = "rendeles_id")
     private Rendeles rendeles;
 
-    @Id
     @ManyToOne
+    @MapsId("arucikkId")
     @JoinColumn(name = "arucikk_id")
     private Arucikk arucikk;
 

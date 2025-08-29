@@ -106,16 +106,4 @@ public class DolgozoController {
         return ResponseEntity.ok(dolgozo);
     }
 
-
-    @GetMapping("/testmap")
-    public DolgozoDTO testMapping() {
-        Dolgozo d = new Dolgozo();
-        d.setId(1);
-        d.setNev("Anna");
-        d.setEmail("anna@bolt.hu");
-        d.setSzerepkor("admin");
-
-        return dolgozoMapper.toDto(d);
-    }
-
 }

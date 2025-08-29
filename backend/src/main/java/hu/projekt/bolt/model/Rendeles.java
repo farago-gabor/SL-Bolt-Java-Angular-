@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "rendelesek")
@@ -33,4 +35,8 @@ public class Rendeles {
 
     @Column(name = "felvetel_datum")
     private LocalDate felvetelDatum;
+
+    // Hogy egyszerűbb legyen egy adott rendelés árucikkjeinek az elérése
+    @OneToMany(mappedBy = "rendeles", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RendelesTetel> tetelek = new ArrayList<>();
 }

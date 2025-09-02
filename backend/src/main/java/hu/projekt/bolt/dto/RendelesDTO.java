@@ -1,7 +1,5 @@
 package hu.projekt.bolt.dto;
 
-import hu.projekt.bolt.model.Dolgozo;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

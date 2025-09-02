@@ -31,7 +31,7 @@ public class RendelesController {
                                                   @RequestParam int dolgozoId,
                                                   @RequestParam List<RendelesTetelDTO> tetelek) {
 
-        LocalDate parsedHatarido = LocalDate.parse(hatarido)
+        LocalDate parsedHatarido = LocalDate.parse(hatarido);
 
         RendelesDTO newRendeles = rendelesService.ujRendeles(email, telefonszam, parsedHatarido, dolgozoId, tetelek);
         return ResponseEntity.ok(newRendeles);

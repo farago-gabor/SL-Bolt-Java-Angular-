@@ -5,7 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class RendelesTetelDTO {
+    private int mennyiseg;
+    private String megjegyzes;
+
+    private String arucikkNev;
 }

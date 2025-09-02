@@ -4,6 +4,7 @@ import hu.projekt.bolt.model.Dolgozo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
+// Itt majd meg kell nézni hogy működik a <Dolgozo, Integer>
 public interface DolgozoRepository extends JpaRepository<Dolgozo, Long> {
     Optional<Dolgozo> findByEmail(String email);
 }

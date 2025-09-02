@@ -19,6 +19,6 @@ public interface RendelesMapper {
 
     List<RendelesTetelDTO> rendelesTetelListaToDto(List<RendelesTetel> r);
 
-//    RendelesTetelDTO RendelesTetelToDto(RendelesTetel r);
+    RendelesTetelDTO RendelesTetelToDto(RendelesTetel r);
 //    RendelesTetel rendelesTetelDtoToEntity(RendelesTetelDTO rDto);
 }

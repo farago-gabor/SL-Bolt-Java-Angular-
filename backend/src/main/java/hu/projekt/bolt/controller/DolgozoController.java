@@ -45,7 +45,7 @@ public class DolgozoController {
     // Dolgozó módosítása (PUT)
     @PutMapping("/{id}")
     public ResponseEntity<DolgozoDTO> modositDolgozo(
-            @PathVariable Long id,
+            @PathVariable int id,
             @RequestBody DolgozoDTO dolgozoDTO) {
 
         if (!isAdmin()) {
@@ -59,7 +59,7 @@ public class DolgozoController {
     // Jelszó módosítása (PUT)
     @PutMapping("/{id}/jelszo")
     public ResponseEntity<DolgozoDTO> modositJelszo(
-            @PathVariable Long id,
+            @PathVariable int id,
             @RequestParam String ujJelszo) {
 
         if (!isAdmin()) {
@@ -72,7 +72,7 @@ public class DolgozoController {
 
     // Dolgozó törlése (DELETE)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> torolDolgozo(@PathVariable Long id) {
+    public ResponseEntity<Void> torolDolgozo(@PathVariable int id) {
 
         if (!isAdmin()) {
             return ResponseEntity.status(403).build();
@@ -96,7 +96,7 @@ public class DolgozoController {
 
     // Egy dolgozó lekérdezése ID alapján (GET)
     @GetMapping("/{id}")
-    public ResponseEntity<DolgozoDTO> getDolgozoById(@PathVariable Long id) {
+    public ResponseEntity<DolgozoDTO> getDolgozoById(@PathVariable int id) {
 
         if (!isAdmin()) {
             return ResponseEntity.status(403).build();

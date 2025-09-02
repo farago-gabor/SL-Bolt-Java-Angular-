@@ -28,5 +28,5 @@ public class RendelesDTO {
     private String dolgozoNev;
     private LocalDate felvetelDatum;
 
-//    private List<RendelesTetelDTO> tetelek;
+    private List<RendelesTetelDTO> tetelek;
 }

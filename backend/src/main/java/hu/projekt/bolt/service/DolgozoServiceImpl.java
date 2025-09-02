@@ -30,7 +30,7 @@ public class DolgozoServiceImpl implements DolgozoService {
     }
 
     @Override
-    public DolgozoDTO modositDolgozo(Long id, String nev, String email, String szerepkor) {
+    public DolgozoDTO modositDolgozo(int id, String nev, String email, String szerepkor) {
         Dolgozo dolgozo = dolgozoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dolgozó nem található"));
 
@@ -42,7 +42,7 @@ public class DolgozoServiceImpl implements DolgozoService {
     }
 
     @Override
-    public DolgozoDTO modositJelszo(Long id, String ujJelszo) {
+    public DolgozoDTO modositJelszo(int id, String ujJelszo) {
         Dolgozo dolgozo = dolgozoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dolgozó nem található"));
 
@@ -53,7 +53,7 @@ public class DolgozoServiceImpl implements DolgozoService {
     }
 
     @Override
-    public void torolDolgozo(Long id) {
+    public void torolDolgozo(int id) {
         dolgozoRepository.deleteById(id);
     }
 
@@ -66,7 +66,7 @@ public class DolgozoServiceImpl implements DolgozoService {
     }
 
     @Override
-    public DolgozoDTO getDolgozoById(Long id) {
+    public DolgozoDTO getDolgozoById(int id) {
         return dolgozoRepository.findById(id)
                 .map(dolgozoMapper::toDto)
                 .orElseThrow(() -> new RuntimeException("A dolgozó nem található!"));

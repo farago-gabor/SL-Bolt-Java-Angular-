@@ -16,20 +16,12 @@ import java.util.List;
 public class RendelesController {
     private final RendelesServiceImpl rendelesService;
 
-//     MEGVALÓSITANDÓ:
-//    RendelesDTO ujRendeles(String email, String telefonszam, LocalDate hatarido, int dolgozoId, List<RendelesTetelDTO> tetelek);
-//    RendelesDTO modositStatusz(int id, boolean beerkezet, boolean felreteve, boolean szoltam, boolean elvitte);
-//    void torolRendeles(int id);
-//    List<RendelesDTO> osszesRendeles();
-//    List<RendelesTetelDTO> getRendelesTetelek(int rendelesId);
-//    RendelesDTO getRendelesById(int id);
-
     @PostMapping
     public ResponseEntity<RendelesDTO> ujRendeles(@RequestParam String email,
                                                   @RequestParam String telefonszam,
                                                   @RequestParam String hatarido,
                                                   @RequestParam int dolgozoId,
-                                                  @RequestParam List<RendelesTetelDTO> tetelek) {
+                                                  @RequestBody List<RendelesTetelDTO> tetelek) {
 
         LocalDate parsedHatarido = LocalDate.parse(hatarido);
 

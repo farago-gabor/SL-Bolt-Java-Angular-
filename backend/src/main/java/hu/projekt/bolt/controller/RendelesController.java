@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/rendelesek")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class RendelesController {
     private final RendelesServiceImpl rendelesService;

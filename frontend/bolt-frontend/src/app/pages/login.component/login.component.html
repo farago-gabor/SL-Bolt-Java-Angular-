@@ -1,0 +1,17 @@
+<h2>Bejelentkezés</h2>
+<form (ngSubmit)="onSubmit()">
+  <label for="email">Email:</label>
+  <input id="email" name="email" [(ngModel)]="email" required>
+
+  <br>
+  <br>
+
+  <label for="jelszo">Jelszó:</label>
+  <input type="password" id="jelszo" name="jelszo" [(ngModel)]="jelszo" required>
+
+  <button type="submit">Bejelentkezés</button>
+</form>
+
+@if (errorMessage) {
+<p style="color:red;">{{ errorMessage }}</p>
+}

@@ -1,0 +1,62 @@
+
+LOGIN:
+
+curl -X POST http://localhost:8080/api/auth/login ^ 
+ -H "Content-Type: application/json" ^
+ -d "{\"email\":\"anna@bolt.hu\", \"jelszo\":\"admin123\"}"
+
+DOLGOZÓK:
+
+	dolgozók lekérése:
+		curl -X GET http://localhost:8080/api/dolgozok ^
+		 -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
+
+	dolgozó hozzáadása:
+		curl -X POST http://localhost:8080/api/dolgozok ^
+ 		-H "Authorization: Bearer YOUR_JWT_TOKEN_HERE" ^
+ 		-d "nev=Teszt Elek" ^
+ 		-d "email=teszt@bolt.hu" ^
+ 		-d "jelszo=teszt123"
+
+	dolgozó módoítása(ID alapján):
+		curl -X PUT http://localhost:8080/api/dolgozok/1 ^
+ 		-H "Authorization: Bearer YOUR_JWT_TOKEN_HERE" ^
+ 		-H "Content-Type: application/json" ^
+ 		-d "{\"nev\":\"Új Név\", \"email\":\"ujemail@bolt.hu\", \"szerepkor\":\"admin\"}"
+
+	jelszó módosítás:
+		curl -X PUT "http://localhost:8080/api/dolgozok/1/jelszo?ujJelszo=ujjelszo123" ^
+ 		-H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
+
+	dolgozó törlése:
+		curl -X PUT "http://localhost:8080/api/dolgozok/1/jelszo?ujJelszo=ujjelszo123" ^
+ 		-H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
+
+RENDELÉSEK:
+
+	rendelések lekérése(összes):
+		curl -X GET "http://localhost:8080/api/rendelesek" ^
+		-H "Authorization: Bearer YOUR_JWT_TOKEN"
+
+	egy rendelés lekérése(ID alapján):
+		curl -X GET "http://localhost:8080/api/rendelesek/1" ^
+		-H "Authorization: Bearer YOUR_JWT_TOKEN"
+	
+	rendelés hozzáadása:
+		curl -X POST "http://localhost:8080/api/rendelesek?email=newcustomer@example.com&telefonszam=06209999999&hatarido=2025-09-15&dolgozoId=2" ^
+		-H "Content-Type: application/json" ^
+		-H "Authorization: Bearer YOUR_JWT_TOKEN" ^
+		-d "[{\"arucikk_id\": 1, \"mennyiseg\": 3}, {\"arucikk_id\": 2, \"mennyiseg\": 1}]"
+
+	rendelés státuszának módosítása:
+		curl -X PUT "http://localhost:8080/api/rendelesek/1/statusz?beerkezet=true&felreteve=false&szoltam=true&elvitte=false" ^
+		-H "Authorization: Bearer YOUR_JWT_TOKEN"
+
+	rendelés törlése:
+		curl -X DELETE "http://localhost:8080/api/rendelesek/2" ^
+		-H "Authorization: Bearer YOUR_JWT_TOKEN"
+
+	rendelés tételeinek lekérése:
+		curl -X GET "http://localhost:8080/api/rendelesek/1/tetelek" ^
+		-H "Authorization: Bearer YOUR_JWT_TOKEN"
+

@@ -4,9 +4,7 @@ import hu.projekt.bolt.dto.RendelesDTO;
 import hu.projekt.bolt.dto.RendelesTetelDTO;
 import hu.projekt.bolt.mapper.DolgozoMapper;
 import hu.projekt.bolt.mapper.RendelesMapper;
-import hu.projekt.bolt.model.Dolgozo;
-import hu.projekt.bolt.model.Rendeles;
-import hu.projekt.bolt.model.RendelesTetel;
+import hu.projekt.bolt.model.*;
 import hu.projekt.bolt.repository.ArucikkRepository;
 import hu.projekt.bolt.repository.RendelesRepository;
 import hu.projekt.bolt.repository.RendelesTetelRepository;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,12 +41,19 @@ public class RendelesServiceImpl implements RendelesService{
 
         for (RendelesTetelDTO tetel : tetelek) {
             RendelesTetel rendelesTetel = new RendelesTetel();
+
+            RendelesTetelId tetelId = new RendelesTetelId();
+            tetelId.setRendelesId(rendeles.getId());
+            Optional<Arucikk> optionalArucikk = arucikkRepository.findByMegnevezes(tetel.getArucikkNev());
+            Arucikk arucikk = optionalArucikk.orElseThrow(() -> new RuntimeException("Nem található az árucikk"));
+            tetelId.setArucikkId(arucikk.getId());  // Set the arucikkId
+
+            rendelesTetel.setId(tetelId);
+
             rendelesTetel.setRendeles(rendeles);
             rendelesTetel.setMennyiseg(tetel.getMennyiseg());
             rendelesTetel.setMegjegyzes(tetel.getMegjegyzes());
-
-            rendelesTetel.setArucikk(arucikkRepository.findByMegnevezes(tetel.getArucikkNev())
-                    .orElseThrow(() -> new RuntimeException("Nem található az árucikk")));
+            rendelesTetel.setArucikk(arucikk);
 
             rendelesTetelRepository.save(rendelesTetel);
         }

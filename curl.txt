@@ -41,10 +41,18 @@ RENDELÉSEK:
 		-H "Authorization: Bearer YOUR_JWT_TOKEN"
 	
 	rendelés hozzáadása:
+		/* A KOMMENTBEN LÉVŐ ÁRUCIKKID ALAPJÁN AKARJA HOZZÁADNI A TÉTELT, DE A DTO-BAN MEGNEVEZÉS VAN (AZ IS EGYEDI)
+
 		curl -X POST "http://localhost:8080/api/rendelesek?email=newcustomer@example.com&telefonszam=06209999999&hatarido=2025-09-15&dolgozoId=2" ^
 		-H "Content-Type: application/json" ^
 		-H "Authorization: Bearer YOUR_JWT_TOKEN" ^
 		-d "[{\"arucikk_id\": 1, \"mennyiseg\": 3}, {\"arucikk_id\": 2, \"mennyiseg\": 1}]"
+		*/
+		// A HELYES:
+		curl -X POST "http://localhost:8080/api/rendelesek?email=newcustomer@example.com&telefonszam=06209999999&hatarido=2025-09-15&dolgozoId=2" ^
+    		-H "Content-Type: application/json" ^
+    		-H "Authorization: Bearer YOUR_JWT_TOKEN" ^
+    		-d "[{\"arucikkNev\": \"Gyújtó\", \"mennyiseg\": 3}, {\"arucikkNev\": \"Dohány\", \"mennyiseg\": 1, \"megjegyzes\": \"Semmi különös\"}]"
 
 	rendelés státuszának módosítása:
 		curl -X PUT "http://localhost:8080/api/rendelesek/1/statusz?beerkezet=true&felreteve=false&szoltam=true&elvitte=false" ^

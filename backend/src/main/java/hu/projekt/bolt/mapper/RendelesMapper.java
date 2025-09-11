@@ -19,6 +19,7 @@ public interface RendelesMapper {
 
     List<RendelesTetelDTO> rendelesTetelListaToDto(List<RendelesTetel> r);
 
+    @Mapping(source = "arucikk.megnevezes", target = "arucikkNev")
     RendelesTetelDTO RendelesTetelToDto(RendelesTetel r);
 //    RendelesTetel rendelesTetelDtoToEntity(RendelesTetelDTO rDto);
 }

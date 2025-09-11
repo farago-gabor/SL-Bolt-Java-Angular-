@@ -36,6 +36,7 @@ public class RendelesServiceImpl implements RendelesService{
         rendeles.setTelefonszam(telefonszam);
         rendeles.setHatarido(hatarido);
         rendeles.setFelvetteDolgozo(dolgozoMapper.toEntity(dolgozoService.getDolgozoById(dolgozoId)));
+        rendeles.setFelvetelDatum(LocalDate.now());
 
         rendelesRepository.save(rendeles);
 

@@ -1,8 +1,6 @@
 Todo:
 	
 	- RendelésService és Controller:
-		- Az árucikkNevet nem adja jól vissza (null) (DE A TÖBBI ADAT JÓ! Szóval az összekötés jól működik)
-		- Nem állít be felvételi dátumot rendeléshez (null)
 		- Amikor létrehozza a rendelést, nem adja vissza a responseEntity-ben a dto-t (És hozzáadásnál dob egy ERROR-t konzolon), DE az adatbázisban jól megjelenik
 	
 
@@ -27,3 +25,8 @@ DONE:
 
 
 	- A dolgozó a saját szerepkörét ne tudja átírni, illetve ne tudja saját magát kitörölni (Csak le kell kérni a saját id-jét és ha megegyezik a módosítandóval ne változtassa)
+
+	- RendelésService és Controller:
+		- Az árucikkNevet nem adja jól vissza (null) (DE A TÖBBI ADAT JÓ! Szóval az összekötés jól működik):
+			A rendelesTetelToDto-nál oda kellett rakni, a @Mapping annotációt, hogy aztán a List<RendelesTetelDTO> rendelesTetelListaToDto jól hozzárendelje
+		- Nem állít be felvételi dátumot rendeléshez (null)

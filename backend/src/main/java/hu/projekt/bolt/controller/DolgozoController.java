@@ -49,6 +49,15 @@ public class DolgozoController {
             @PathVariable int id,
             @RequestBody DolgozoDTO dolgozoDTO) {
 
+        // A dolgozó a saját szerepkörét ne tudja átírni:
+        String bejelentkezettEmail = SecurityContextHolder.getContext().getAuthentication().getName().toString();
+        DolgozoDTO bejelentkezettDolgozo = dolgozoService.getDolgozoByEmail(bejelentkezettEmail);
+
+
+        if (bejelentkezettDolgozo.getId() == id) {
+            dolgozoDTO.setSzerepkor(bejelentkezettDolgozo.getSzerepkor());
+        }
+
         if (!isAdmin()) {
             return ResponseEntity.status(403).build();
         }

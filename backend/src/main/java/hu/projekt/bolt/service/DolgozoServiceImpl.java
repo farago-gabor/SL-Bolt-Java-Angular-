@@ -71,4 +71,10 @@ public class DolgozoServiceImpl implements DolgozoService {
                 .map(dolgozoMapper::toDto)
                 .orElseThrow(() -> new RuntimeException("A dolgozó nem található!"));
     }
+
+    public DolgozoDTO getDolgozoByEmail(String email) {
+        return dolgozoRepository.findByEmail(email)
+                .map(dolgozoMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("A dolgozó nem található!"));
+    }
 }

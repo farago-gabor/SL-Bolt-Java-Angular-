@@ -1,5 +1,4 @@
 Todo:
-	- A dolgozó a saját szerepkörét ne tudja átírni, illetve ne tudja saját magát kitörölni (Csak le kell kérni a saját id-jét és ha megegyezik a módosítandóval ne változtassa)
 	
 	- RendelésService és Controller:
 		- Az árucikkNevet nem adja jól vissza (null) (DE A TÖBBI ADAT JÓ! Szóval az összekötés jól működik)
@@ -25,3 +24,6 @@ DONE:
 						<artifactId>lombok-mapstruct-binding</artifactId>
 						<version>0.2.0</version>
 					</path>
+
+
+	- A dolgozó a saját szerepkörét ne tudja átírni, illetve ne tudja saját magát kitörölni (Csak le kell kérni a saját id-jét és ha megegyezik a módosítandóval ne változtassa)

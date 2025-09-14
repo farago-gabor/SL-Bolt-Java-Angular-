@@ -1,0 +1,43 @@
+USE bolt;
+
+-- Dolgozók
+INSERT INTO dolgozok (nev, email, jelszo, szerepkor) VALUES
+('Kiss Anna', 'anna@bolt.hu', 'admin123', 'admin'),
+('Nagy Péter', 'peter@bolt.hu', 'dolgozo123', 'dolgozo');
+
+-- Tevékenységek
+INSERT INTO tevekenysegek (megnevezes, rendszeres, reszletes_leiras) VALUES
+('Kávégép tisztítás', TRUE, 'A kávégép napi tisztítása és karbantartása a megfelelő működés érdekében.'),
+('Felmosás', TRUE, 'A bolti terület napi felmosása, hogy tiszta és higiénikus maradjon.'),
+('Polc átrendezés', FALSE, 'A polcok átrendezése igény szerint, hogy a termékek elérhetősége javuljon.'),
+('Raktár takarítás', FALSE, 'A raktár rendbetétele és tisztítása.');
+
+-- Tevékenység gyakoriság
+INSERT INTO tevekenyseg_gyakorisag (tevekenyseg_id, gyakorisag, napok, ido_pontra_datum) VALUES
+(1, 'naponta', NULL, '08:00'),  -- Kávégép tisztítás napi, 08:00-kor
+(2, 'heti', 'hétfő, szerda, péntek', '09:00'),  -- Felmosás heti 3 alkalommal
+(3, 'specifikus', NULL, NULL),  -- Polc átrendezés specifikus, nincsen fix időpont
+(4, 'havonta', NULL, NULL);  -- Raktár takarítás havi
+
+-- Tevékenység napló
+INSERT INTO tevekenyseg_naplo (tevekenyseg_id, dolgozo_id, datum, megcsinalta) VALUES
+(1, 2, '2025-07-01 08:15:00', TRUE),
+(2, 2, '2025-07-01 09:00:00', TRUE),
+(3, 2, '2025-07-01 10:00:00', FALSE);
+
+-- Árucikkek
+INSERT INTO arucikkek (cikkcsoport, megnevezes, vonalkod) VALUES
+('Gyújtóeszköz', 'Gyújtó', '1234567890123'),
+('Dohányáru', 'Dohány', '9876543210987'),
+('Papírtermék', 'Cigi papír', '1112223334445');
+
+-- Rendelések
+INSERT INTO rendelesek (email, telefonszam, hatarido, beerkezett, felreteve, szoltam, elvitte, felvette_dolgozo_id, felvetel_datum) VALUES
+('vasarlo1@example.com', '06201234567', '2025-07-05', TRUE, TRUE, TRUE, FALSE, 2, '2025-06-30 14:00:00'),
+('vasarlo2@example.com', '06205555555', '2025-07-10', FALSE, FALSE, FALSE, FALSE, 2, '2025-07-01 10:30:00');
+
+-- Rendelés tételek
+INSERT INTO rendeles_tetelek (rendeles_id, arucikk_id, mennyiseg, megjegyzes) VALUES
+(1, 1, 2, 'Kék színű változat'),
+(1, 3, 1, NULL),
+(2, 2, 3, 'Erős fajta');

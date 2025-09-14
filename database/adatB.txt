@@ -1,0 +1,95 @@
+-- Adatbázis létrehozása
+CREATE DATABASE IF NOT EXISTS bolt CHARACTER SET utf8mb4 COLLATE utf8mb4_hungarian_ci;
+USE bolt;
+
+-- Dolgozók tábla
+CREATE TABLE dolgozok (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nev VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    jelszo VARCHAR(255),
+    szerepkor ENUM('admin', 'dolgozo') NOT NULL DEFAULT 'dolgozo'
+);
+
+-- Tevékenységek tábla (alap információk a tevékenységről)
+CREATE TABLE tevekenysegek (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    megnevezes VARCHAR(100) NOT NULL,  -- Tevékenység neve
+    rendszeres BOOLEAN DEFAULT FALSE,  -- Rendszeresség: van-e meghatározott időpontja?
+    reszletes_leiras TEXT             -- Részletes leírás a tevékenységről, ha szükséges
+);
+/*
+-- Tevékenység gyakoriság tábla (a rendszerességet és gyakoriságot kezeljük)
+CREATE TABLE tevekenyseg_gyakorisag (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tevekenyseg_id INT,               -- A tevékenység azonosítója
+    gyakorisag ENUM('naponta', 'heti', 'kethetente', 'havonta', 'specifikus'),  -- Gyakoriság típusa
+    napok VARCHAR(255),               -- Ha heti gyakoriság, akkor tároljuk, hogy melyik napokon (pl. 'hétfő, kedd')
+    ido_pontra_datum TIME,            -- Ha van pontos időpont, pl. '06:00', '09:00'
+    FOREIGN KEY (tevekenyseg_id) REFERENCES tevekenysegek(id)
+);
+*/
+/* MÓDOSITOTT
+
+-- Tevékenység gyakoriság tábla (a rendszerességet és gyakoriságot kezeljük)
+	CREATE TABLE tevekenyseg_gyakorisag (
+	    id INT AUTO_INCREMENT PRIMARY KEY, 
+	    tevekenyseg_id INT,               -- A tevékenység azonosítója
+	    gyakorisag ENUM('heti', 'ketheti', 'haromheti', 'mindig', 'egyszeri'),  -- Gyakoriság típusa és ez kell-e: ('hetkoznap', 'hetvege')
+	    //gyakorisag_szam INT,              -- A gyakoriság száma (pl. 2, 3 stb.) // EZ KELL-E?
+	    napok VARCHAR(255),               -- Ha heti gyakoriság, akkor tároljuk, hogy melyik napokon (pl. 'hétfő, kedd')
+	    ido_pontra_datum TIME,            -- Ha van pontos időpont, pl. '06:00', '09:00'
+	    kovetkezo_datuma DATE,            -- Következő esedékes végrehajtás dátuma // Ez csak akkor szükséges, ha 2 v 3 hetente ismétlődő
+		// VAGY EZ HELYETT kezdo_datum/kezdo_het_datum és ezzel számolgatjuk az ismétlődést
+	    FOREIGN KEY (tevekenyseg_id) REFERENCES tevekenysegek(id) 
+	);
+
+ÉS AKKOR A rendszeres BOOL-t kivehetjük a tevékenység táblából
+Ezt akár helyettesíthetjük kezdési dátummal és akkor a kovetkezo dátum elkerülhető
+
+*/
+
+-- Tevékenység napló (végrehajtások)
+CREATE TABLE tevekenyseg_naplo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tevekenyseg_id INT NOT NULL,
+    dolgozo_id INT,
+    datum DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    megcsinalta BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (tevekenyseg_id) REFERENCES tevekenysegek(id),
+    FOREIGN KEY (dolgozo_id) REFERENCES dolgozok(id)
+);
+
+CREATE TABLE rendelesek (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100),
+    telefonszam VARCHAR(30),
+    hatarido DATE,
+    beerkezett BOOLEAN DEFAULT FALSE,
+    felreteve BOOLEAN DEFAULT FALSE,
+    szoltam BOOLEAN DEFAULT FALSE,
+    elvitte BOOLEAN DEFAULT FALSE,
+    felvette_dolgozo_id INT,
+    felvetel_datum DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (felvette_dolgozo_id) REFERENCES dolgozok(id)
+);
+
+
+CREATE TABLE arucikkek (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cikkcsoport VARCHAR(100) NOT NULL,
+    megnevezes VARCHAR(100) NOT NULL,
+    vonalkod VARCHAR(50) NOT NULL UNIQUE
+);
+
+
+
+CREATE TABLE rendeles_tetelek (
+    rendeles_id INT,
+    arucikk_id INT,
+    mennyiseg INT DEFAULT 1,
+    megjegyzes VARCHAR(255),
+    PRIMARY KEY (rendeles_id, arucikk_id),
+    FOREIGN KEY (rendeles_id) REFERENCES rendelesek(id) ON DELETE CASCADE,
+    FOREIGN KEY (arucikk_id) REFERENCES arucikkek(id) ON DELETE CASCADE
+);

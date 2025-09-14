@@ -30,6 +30,7 @@ DONE:
 		- Az árucikkNevet nem adja jól vissza (null) (DE A TÖBBI ADAT JÓ! Szóval az összekötés jól működik):
 			A rendelesTetelToDto-nál oda kellett rakni, a @Mapping annotációt, hogy aztán a List<RendelesTetelDTO> rendelesTetelListaToDto jól hozzárendelje
 		- Nem állít be felvételi dátumot rendeléshez (null)
+
 		- Amikor létrehozza a rendelést, nem adja vissza a responseEntity-ben a dto-t (És hozzáadásnál dob egy ERROR-t konzolon), DE az adatbázisban jól megjelenik
 			- 1. hiba: curl parancs árucikkId-t adott meg, de a rendelesTetelDTO-ban árucikkNév van
 			- 2. hiba: Optional<Arucikk> osztályt ad vissza az ArucikkRepository, ezt át kellett alakítani Arucikk osztállyá

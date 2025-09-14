@@ -1,0 +1,50 @@
+1. Elvégzendő feladatok listája:
+	a) Lekéri a MA elvégzendő feladatokat(Service):
+		- Java:
+			```
+			LocalDate currentDate = LocalDate.now();       
+        		String dayOfWeek = currentDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH); // Szövegként visszaadja angolul (pl.: Monday)
+			```
+		- Adatbázisból, le kell kérni a napokat.
+		- Ezt összehasonlítom az adatbázisban tárolt nappal, és ha megegyezik, akkor megjeleníti.
+
+	b) elvégzés gomb:
+		- Hozzáadja a tevékenységnaplóhoz az adott tevékenységet.
+
+2. Elvégzett feladatok listája:
+	a) Listázza a MA elvégzett feladatokat:
+		- Hasonló a fentihez, csak a naplóból kéri le.
+
+3. Napló oldal:
+	a) Listázza az ÖSSZES elvégzett feladatot a naplóból.
+
+4. Admin:
+	a) Tevékenység CRUD:
+		- C: Hozzáadja a tevékenység és tevékenység_gyakoriság táblához a tevékenységet
+		- R: Listázza az összes feladatot, külön ismétlődés szerint:
+			- pl.: NAPI: (napi feladatok listázva infókkal), HETI: (heti feladatok listázva, melyik napokon, mikor és egyéb infókkal), HAVI:, ...
+
+1.a = SELECT a tevékenységből, ahol a tevékenység gyakoriság táblában a napok tartalmazza a mai napot.
+	// FONTOS: a tevékenység rendszerességének jó kiszámolása! (heti, 2heti, 3heti, mindig, egyszeri)
+1.b = CREATE a tevékenységnaplóba ÉS ha már a tevékenységnapló tartalmazza az egyik napi feladatot NE listázza az elvégzendő feladatoknál.
+2.a = 1.a-hoz hasonló, csak tevékenységnaplóból
+3.a = Csak minden naplóelemet le kell kérni
+4.a = CRUD a tevékenység és tevékenységgyakoriság összekötésével
+	// FONTOS: a tevékenységgyakoriságok rendszerességének jó tárolása! (heti, 2heti, 3heti)
+
+Entity-k:
+	Tevekenyseg (tevékenység tábla)
+	TevekenysegGyakorisag (tevekenyseg_gyakorisag tábla)
+	TevekenysegNaplo (tevekenyseg_naplo tábla)
+DTO-k:
+	/*EZT MÉG KI KELL TALÁLNI:*/
+	// ALÁBBIAKAT KELL MEGJELENÍTENI: // Tev.: megnevezés, leírás, gyakoriság(hogy milyen gyakran(heti, 2heti, mindig), lista), nap:időpont (map is lehet)
+	!TevekenysegDTO (tartalmazza a gyakoriságot is az alábbi módon:
+				- Lista: amely a gyakoriságot tartalmazza, (heti, 2heti, etc.)
+				- Map: kulcs érték pár, ahol a kulcs a nap, az érték az aznapi időpontok (hétfő: [9:00, 10:00]), etc.)
+					Az, hogy)
+	TevekenysegNaploDTO
+
+- Tehát DTO-kba úgy érdemes eltárolni, hogy a gyakoriság táblát beleolvasztom a tevékenységekbe
+- 
+

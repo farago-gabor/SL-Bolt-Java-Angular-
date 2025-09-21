@@ -36,11 +36,9 @@ CREATE TABLE tevekenyseg_gyakorisag (
 	    id INT AUTO_INCREMENT PRIMARY KEY, 
 	    tevekenyseg_id INT,               -- A tevékenység azonosítója
 	    gyakorisag ENUM('heti', 'ketheti', 'haromheti', 'mindig', 'egyszeri'),  -- Gyakoriság típusa és ez kell-e: ('hetkoznap', 'hetvege')
-	    //gyakorisag_szam INT,              -- A gyakoriság száma (pl. 2, 3 stb.) // EZ KELL-E?
 	    napok VARCHAR(255),               -- Ha heti gyakoriság, akkor tároljuk, hogy melyik napokon (pl. 'hétfő, kedd')
 	    ido_pontra_datum TIME,            -- Ha van pontos időpont, pl. '06:00', '09:00'
-	    kovetkezo_datuma DATE,            -- Következő esedékes végrehajtás dátuma // Ez csak akkor szükséges, ha 2 v 3 hetente ismétlődő
-		// VAGY EZ HELYETT kezdo_datum/kezdo_het_datum és ezzel számolgatjuk az ismétlődést
+	    kezdo_datum DATE,            -- Következő esedékes végrehajtás dátumának meghatározására // Ez csak akkor szükséges, ha 2 v 3 hetente ismétlődő
 	    FOREIGN KEY (tevekenyseg_id) REFERENCES tevekenysegek(id) 
 	);
 

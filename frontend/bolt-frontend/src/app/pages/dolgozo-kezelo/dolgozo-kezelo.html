@@ -1,1 +1,34 @@
-<p>dolgozo-kezelo works!</p>
+<h2>Dolgozók kezelése (admin)</h2>
+
+<h3>Új dolgozó felvétele</h3>
+
+<h3>Dolgozók listája</h3>
+
+<!--
+    id: number;
+    email: string;
+    nev: string;
+    szerepkor: string;
+    ujJelszo: string
+-->
+
+<table mat-table [dataSource]="dolgozok">
+
+    <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <td mat-cell *matCellDef="let dolgozo"> {{ dolgozo.email }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="nev">
+        <th mat-header-cell *matHeaderCellDef> Nev </th>
+        <td mat-cell *matCellDef="let dolgozo"> {{ dolgozo.nev }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="szerepkor">
+        <th mat-header-cell *matHeaderCellDef> Szerepkor </th>
+        <td mat-cell *matCellDef="let dolgozo"> {{ dolgozo.szerepkor }} </td>
+    </ng-container>
+    
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

@@ -4,10 +4,14 @@ import { Router } from '@angular/router';
 import { Dolgozo } from '../../shared/models/dolgozo.model';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-login.component',
-  imports: [FormsModule, HttpClientModule],
+  imports: [FormsModule, HttpClientModule, MatInputModule, MatButtonModule, MatFormFieldModule, MatCardModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })

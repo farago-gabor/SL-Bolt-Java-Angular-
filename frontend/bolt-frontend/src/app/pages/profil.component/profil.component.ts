@@ -20,9 +20,9 @@ export class ProfilComponent implements OnInit{
 
   ngOnInit(): void {
     const user = this.authService.getUser();
-  if (user !== null) {
-    this.dolgozo = user;
-  }
+    if (user !== null) {
+      this.dolgozo = user;
+    }
   }
 
   logout() {

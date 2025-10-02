@@ -40,6 +40,7 @@ public class AuthController {
             return ResponseEntity.ok(Map.of(
                     "token", token,
                     "nev", dolgozo.getNev(),
+                    "id", dolgozo.getId(),
                     "szerepkor", dolgozo.getSzerepkor()
             ));
         } catch (AuthenticationException e) {

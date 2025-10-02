@@ -26,10 +26,21 @@ export class AuthService {
 
   setUser(dolgozo: Dolgozo): void {
     this.felhasznalo = dolgozo;
+    localStorage.setItem('felhasznalo', JSON.stringify(dolgozo));
   }
   
   getUser(): Dolgozo | null {
+    if (this.felhasznalo) {
     return this.felhasznalo;
+    }
+
+    const stored = localStorage.getItem('felhasznalo');
+    if (stored) {
+      this.felhasznalo = JSON.parse(stored);
+      return this.felhasznalo;
+    }
+
+    return null;
   }
 
   isLoggedIn(): boolean {

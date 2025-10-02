@@ -1,0 +1,165 @@
+<h1>Rendelések</h1>
+
+<!-- Új rendelés panel -->
+<mat-accordion>
+  <mat-expansion-panel [(expanded)]="ujRendelesMegjelenitese">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Új rendelés felvétele
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <form (ngSubmit)="submitUjRendeles()" #ujForm="ngForm">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput name="email" [(ngModel)]="ujRendeles.email" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Telefonszám</mat-label>
+        <input matInput name="telefonszam" [(ngModel)]="ujRendeles.telefonszam" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Határidő</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="ujRendeles.hatarido" name="hatarido" required />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <div>
+        <h4>Tételek</h4>
+        
+        @for (tetel of ujRendeles.tetelek; let i = $index; track tetel) {
+        <div class="tetel-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Árucikk neve</mat-label>
+                <input matInput [(ngModel)]="tetel.arucikkNev" name="arucikkNev{{i}}" required />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Mennyiség</mat-label>
+                <input matInput type="number" [(ngModel)]="tetel.mennyiseg" name="mennyiseg{{i}}" min="1" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Megjegyzés</mat-label>
+                <input matInput [(ngModel)]="tetel.megjegyzes" name="megjegyzes{{i}}" />
+            </mat-form-field>
+
+            <button mat-icon-button color="warn" type="button" (click)="ujRendeles.tetelek.splice(i, 1)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+        }
+
+        <button mat-button type="button" (click)="ujRendeles.tetelek.push({ arucikkNev: '', mennyiseg: 1, megjegyzes: '' })">
+        + Tétel hozzáadása
+        </button>
+
+        
+      </div>
+
+      <button mat-raised-button color="primary" type="submit">Mentés</button>
+    </form>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<!-- Rendelések táblázat -->
+<mat-table [dataSource]="rendelesek" class="mat-elevation-z8">
+
+    <!-- Tételek -->    
+    <ng-container matColumnDef="tetelek">
+    <mat-header-cell *matHeaderCellDef> Tételek </mat-header-cell>
+    <mat-cell *matCellDef="let rendeles">
+        
+        @if (rendelesTetelek) {
+        <ul class="tetel-list">
+            @for (tetel of rendelesTetelek[rendeles.id]; track tetel) {
+            <li>Termék: {{ tetel.arucikkNev }} ({{ tetel.mennyiseg }} db) - {{ tetel.megjegyzes }},</li>
+            }
+        </ul>
+        } @else {
+        –
+        }
+        
+    </mat-cell>
+    </ng-container>
+
+    <!-- Határidő -->
+    <ng-container matColumnDef="hatarido">
+        <mat-header-cell *matHeaderCellDef> Határidő </mat-header-cell>
+        <mat-cell *matCellDef="let rendeles"> {{ rendeles.hatarido }} </mat-cell>
+    </ng-container>
+
+    <!-- Vevő oszlop -->
+    <ng-container matColumnDef="vevo">
+        <mat-header-cell *matHeaderCellDef> Vevő elérhetőségei </mat-header-cell>
+        <mat-cell *matCellDef="let rendeles">
+            {{ rendeles.email }}<br>{{ rendeles.telefonszam }}
+        </mat-cell>
+    </ng-container>
+
+    <!-- Státusz -->
+    <ng-container matColumnDef="statusz">
+    <mat-header-cell *matHeaderCellDef> Státusz </mat-header-cell>
+    <mat-cell *matCellDef="let rendeles">
+        @if (szerkesztettRendeles !== null && szerkesztettRendeles == rendeles) {
+        <div class="statusz-szerkeszto-panel">
+            <mat-checkbox [(ngModel)]="szerkesztettRendeles.beerkezet">Beérkezett</mat-checkbox>
+            <mat-checkbox [(ngModel)]="szerkesztettRendeles.felreteve">Félretéve</mat-checkbox>
+            <mat-checkbox [(ngModel)]="szerkesztettRendeles.szoltam">Szólva</mat-checkbox>
+            <mat-checkbox [(ngModel)]="szerkesztettRendeles.elvitte">Elvitte</mat-checkbox>
+
+            <div>
+            <button mat-button color="primary" (click)="mentesStatusz()">Mentés</button>
+            <button mat-button (click)="szerkesztettRendeles = null">Mégse</button>
+            </div>
+        </div>
+        } @else {
+        Beérkezett: {{ rendeles.beerkezet ? '✔' : '✖' }} <br>
+        Félretéve: {{ rendeles.felreteve ? '✔' : '✖' }} <br>
+        Szólva: {{ rendeles.szoltam ? '✔' : '✖' }} <br>
+        Elvitte: {{ rendeles.elvitte ? '✔' : '✖' }} <br>
+        }
+    </mat-cell>
+    </ng-container>
+
+    <!-- Felvette -->
+    <ng-container matColumnDef="dolgozoId">
+        <mat-header-cell *matHeaderCellDef> Felvette </mat-header-cell>
+        <mat-cell *matCellDef="let rendeles"> {{ rendeles.dolgozoNev }} </mat-cell>
+    </ng-container>
+
+
+    <!-- Műveletek -->
+    <ng-container matColumnDef="muveletek">
+        <mat-header-cell *matHeaderCellDef> Műveletek </mat-header-cell>
+        <mat-cell *matCellDef="let rendeles">
+            <button mat-button color="accent" (click)="modositStatusz(rendeles)">Státusz</button>
+            <button mat-button color="warn" (click)="torolRendeles(rendeles.id)">Törlés</button>
+        </mat-cell>
+    </ng-container>
+<!--
+    
+@if (szerkesztettRendeles!== null && szerkesztettRendeles == rendeles) {
+
+  <div class="statusz-szerkeszto-panel">
+    <mat-checkbox [(ngModel)]="szerkesztettRendeles.beerkezet">Beérkezett</mat-checkbox>
+    <mat-checkbox [(ngModel)]="szerkesztettRendeles.felreteve">Félretéve</mat-checkbox>
+    <mat-checkbox [(ngModel)]="szerkesztettRendeles.szoltam">Szólva</mat-checkbox>
+    <mat-checkbox [(ngModel)]="szerkesztettRendeles.elvitte">Elvitte</mat-checkbox>
+
+    <div>
+      <button mat-button color="primary" (click)="mentesStatusz()">Mentés</button>
+      <button mat-button (click)="szerkesztettRendeles = null">Mégse</button>
+    </div>
+  </div>
+  }
+
+-->
+    <!-- Fejlécek és sorok -->
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+</mat-table>

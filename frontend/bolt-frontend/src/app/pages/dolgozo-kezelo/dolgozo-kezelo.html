@@ -2,7 +2,7 @@
 
 <h3>Új dolgozó felvétele</h3>
 
-<h3>Dolgozók listája</h3>
+
 
 <!--
     id: number;
@@ -11,24 +11,37 @@
     szerepkor: string;
     ujJelszo: string
 -->
+<mat-card class="list-card">
 
-<table mat-table [dataSource]="dolgozok">
+    <h3 class="sub-header">Dolgozók listája</h3>
 
-    <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef> Email </th>
-        <td mat-cell *matCellDef="let dolgozo"> {{ dolgozo.email }} </td>
-    </ng-container>
+    <table mat-table [dataSource]="dolgozok">
 
-    <ng-container matColumnDef="nev">
-        <th mat-header-cell *matHeaderCellDef> Nev </th>
-        <td mat-cell *matCellDef="let dolgozo"> {{ dolgozo.nev }} </td>
-    </ng-container>
+        <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef> Email </th>
+            <td mat-cell *matCellDef="let dolgozo"> {{ dolgozo.email }} </td>
+        </ng-container>
 
-    <ng-container matColumnDef="szerepkor">
-        <th mat-header-cell *matHeaderCellDef> Szerepkor </th>
-        <td mat-cell *matCellDef="let dolgozo"> {{ dolgozo.szerepkor }} </td>
-    </ng-container>
-    
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
+        <ng-container matColumnDef="nev">
+            <th mat-header-cell *matHeaderCellDef> Nev </th>
+            <td mat-cell *matCellDef="let dolgozo"> {{ dolgozo.nev }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="szerepkor">
+            <th mat-header-cell *matHeaderCellDef> Szerepkor </th>
+            <td mat-cell *matCellDef="let dolgozo"> {{ dolgozo.szerepkor }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="gombok">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let gombok">
+                <button>Új jelszó</button>
+                <button>Módosítás</button>
+                <button>Törlés</button>
+            </td>
+        </ng-container>
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</mat-card>

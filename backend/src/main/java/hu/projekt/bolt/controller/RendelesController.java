@@ -2,6 +2,7 @@ package hu.projekt.bolt.controller;
 
 import hu.projekt.bolt.dto.RendelesDTO;
 import hu.projekt.bolt.dto.RendelesTetelDTO;
+import hu.projekt.bolt.model.Arucikk;
 import hu.projekt.bolt.service.RendelesServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -72,6 +73,13 @@ public class RendelesController {
         List<RendelesTetelDTO> rendelesTetelek = rendelesService.getRendelesTetelek(id);
 
         return ResponseEntity.ok(rendelesTetelek);
+    }
+
+    @GetMapping("/arucikkek")
+    public ResponseEntity<List<Arucikk>> osszesArucikk() {
+        List<Arucikk> osszArucikk = rendelesService.osszesArucikk();
+
+        return ResponseEntity.ok(osszArucikk);
     }
 
 }

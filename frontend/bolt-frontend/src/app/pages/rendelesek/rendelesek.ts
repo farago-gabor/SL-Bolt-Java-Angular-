@@ -15,6 +15,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import {MAT_DATE_LOCALE, provideNativeDateAdapter} from '@angular/material/core';
 import { AuthService } from '../../shared/services/auth.service';
 import { DatePipe } from '@angular/common';
+import { Arucikk } from '../../shared/models/arucikk.model';
 
 
 @Component({
@@ -36,6 +37,8 @@ export class Rendelesek implements OnInit {
   rendelesTetelek: { [rendelesId: number]: RendelesTetelDTO[] } = {};
   ujRendelesMegjelenitese = false;
   sikeresTorles = false;
+
+  arucikkek: Arucikk[] = [];
   
   displayedColumns = ['tetelek', 'hatarido', 'vevo', 'statusz', 'dolgozoId', 'muveletek'];
 
@@ -55,6 +58,8 @@ export class Rendelesek implements OnInit {
 
   ngOnInit(): void {
     this.loadRendelesek();
+    this.loadArucikkek();
+
     const user = this.authService.getUser();
     if (user?.id != null) {
       this.ujRendeles.dolgozoId = user.id;
@@ -73,6 +78,12 @@ export class Rendelesek implements OnInit {
         });
       }
     });
+  }
+
+  loadArucikkek() {
+    this.rendelesService.osszesArucikk().subscribe( data => {
+      this.arucikkek = data;
+    })
   }
 
   submitUjRendeles() {

@@ -1,5 +1,5 @@
 Todo:
-	
+	- Összes árucikknév listázása, 
 	- RendelésService és Controller:
 		
 	

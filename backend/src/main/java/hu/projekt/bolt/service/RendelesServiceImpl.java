@@ -117,4 +117,8 @@ public class RendelesServiceImpl implements RendelesService{
                 .orElseThrow(() -> new RuntimeException("Rendelés nem található"));
 
     }
+
+    public List<Arucikk> osszesArucikk() {
+        return arucikkRepository.findAll().stream().toList();
+    }
 }

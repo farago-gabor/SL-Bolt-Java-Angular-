@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environment/environment';
 import { RendelesDTO } from '../../models/rendeles-dto.model';
 import { RendelesTetelDTO } from '../../models/rendeles-tetel-dto.model';
+import { Arucikk } from '../../models/arucikk.model';
 
 @Injectable({
   providedIn: 'root'
@@ -60,5 +61,9 @@ export class RendelesService {
 
   getRendelesTetelek(id: number): Observable<RendelesTetelDTO[]> {
     return this.http.get<RendelesTetelDTO[]>(`${this.url}/${id}/tetelek`);
+  }
+
+  osszesArucikk(): Observable<Arucikk[]> {
+    return this.http.get<Arucikk[]>(`${this.url}/arucikkek`);
   }
 }

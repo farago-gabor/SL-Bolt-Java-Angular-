@@ -10,17 +10,23 @@ import { MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import {MAT_DATE_LOCALE, provideNativeDateAdapter} from '@angular/material/core';
+import {MAT_DATE_LOCALE, MatOptionModule, provideNativeDateAdapter} from '@angular/material/core';
 import { AuthService } from '../../shared/services/auth.service';
-import { DatePipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Arucikk } from '../../shared/models/arucikk.model';
+import { MatAutocomplete, MatAutocompleteModule } from '@angular/material/autocomplete';
+import { map, Observable, startWith } from 'rxjs';
 
 
 @Component({
   selector: 'app-rendelesek',
-  imports: [MatTableModule, MatExpansionModule, MatButtonModule, MatFormField, MatInputModule, MatIconModule, MatCheckboxModule, FormsModule, MatDatepickerModule],
+  imports: [
+    MatTableModule, MatExpansionModule, MatButtonModule, MatFormField, MatInputModule,
+    MatIconModule, MatCheckboxModule, FormsModule, MatDatepickerModule, MatAutocomplete, ReactiveFormsModule,
+    MatAutocompleteModule, AsyncPipe, MatOptionModule
+],
   providers: [
     provideNativeDateAdapter(),
     {
@@ -39,6 +45,10 @@ export class Rendelesek implements OnInit {
   sikeresTorles = false;
 
   arucikkek: Arucikk[] = [];
+
+  //autocomplete megvalósítása:
+  filteredArucikkek: { [index: number]: Observable<string[]> } = {}; // Ez tartalmazza minden egyes tétel autocomplete szűrt listáját.
+  arucikkNevControls: { [index: number]: FormControl } = {}; // Minden egyes input mezőhöz, ahol gépeled a nevet, kell egy külön FormControl, hogy reagálni tudjon a változásokra
   
   displayedColumns = ['tetelek', 'hatarido', 'vevo', 'statusz', 'dolgozoId', 'muveletek'];
 
@@ -127,6 +137,32 @@ export class Rendelesek implements OnInit {
       this.szerkesztettRendeles = null;
     });
   }
-  
+
+  // autocompletehez:
+
+  addTetel() {
+    const index = this.ujRendeles.tetelek.length;
+
+    this.ujRendeles.tetelek.push({
+      arucikkNev: '',
+      mennyiseg: 1,
+      megjegyzes: ''
+    });
+
+    // Autocomplete control és szűrés beállítása
+    this.arucikkNevControls[index] = new FormControl('');
+    this.filteredArucikkek[index] = this.arucikkNevControls[index].valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterArucikkek(value || ''))
+    );
+  }
+
+  private _filterArucikkek(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.arucikkek
+      .map(a => a.megnevezes)
+      .filter(option => option.toLowerCase().includes(filterValue));
+  }
+    
 }
 

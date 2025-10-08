@@ -34,8 +34,13 @@
         <div class="tetel-row">
             <mat-form-field appearance="outline">
                 <mat-label>Árucikk neve</mat-label>
-                <input matInput [(ngModel)]="tetel.arucikkNev" name="arucikkNev{{i}}" required />
-            </mat-form-field>
+                <input type="text" [formControl]="arucikkNevControls[i]" matInput [matAutocomplete]="auto" [(ngModel)]="tetel.arucikkNev" name="arucikkNev{{i}}" required />
+                  <mat-autocomplete #auto="matAutocomplete">
+                    @for (arucikk of filteredArucikkek[i] | async; track $index) {
+                      <mat-option [value]="arucikkek"> {{ arucikk }} </mat-option>
+                    }
+                  </mat-autocomplete>
+              </mat-form-field>
 
             <mat-form-field appearance="outline">
                 <mat-label>Mennyiség</mat-label>

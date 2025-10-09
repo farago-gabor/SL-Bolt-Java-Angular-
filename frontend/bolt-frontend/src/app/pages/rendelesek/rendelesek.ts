@@ -17,7 +17,7 @@ import { AuthService } from '../../shared/services/auth.service';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { Arucikk } from '../../shared/models/arucikk.model';
 import { MatAutocomplete, MatAutocompleteModule } from '@angular/material/autocomplete';
-import { map, Observable, startWith } from 'rxjs';
+import { map, Observable, of, startWith } from 'rxjs';
 
 
 @Component({
@@ -48,7 +48,7 @@ export class Rendelesek implements OnInit {
 
   //autocomplete megvalósítása:
   filteredArucikkek: { [index: number]: Observable<string[]> } = {}; // Ez tartalmazza minden egyes tétel autocomplete szűrt listáját.
-  arucikkNevControls: { [index: number]: FormControl } = {}; // Minden egyes input mezőhöz, ahol gépeled a nevet, kell egy külön FormControl, hogy reagálni tudjon a változásokra
+  //arucikkNevControls: { [index: number]: FormControl } = {}; // Minden egyes input mezőhöz, ahol gépeled a nevet, kell egy külön FormControl, hogy reagálni tudjon a változásokra
   
   displayedColumns = ['tetelek', 'hatarido', 'vevo', 'statusz', 'dolgozoId', 'muveletek'];
 
@@ -139,7 +139,56 @@ export class Rendelesek implements OnInit {
   }
 
   // autocompletehez:
+  addTetel() {
+    const index = this.ujRendeles.tetelek.length;
 
+    this.ujRendeles.tetelek.push({
+      arucikkNev: '',
+      mennyiseg: 1,
+      megjegyzes: ''
+    });
+
+    // Initialize filtered list with all options
+    this.filteredArucikkek[index] = of(
+      this.arucikkek.map(a => a.megnevezes)
+    );
+  }
+
+  onArucikkNevChange(index: number, value: string) {
+    const filterValue = (value || '').toLowerCase();
+
+    this.filteredArucikkek[index] = of(
+      this.arucikkek
+        .map(a => a.megnevezes)
+        .filter(option => option.toLowerCase().includes(filterValue))
+    );
+  }
+
+  removeTetel(index: number): void {
+    this.ujRendeles.tetelek.splice(index, 1);
+
+    // Remove the autocomplete options for that index
+    delete this.filteredArucikkek[index];
+
+    // Reindex filteredArucikkek to avoid index mismatches
+    this.reindexFilteredArucikkek();
+  }
+  
+  private reindexFilteredArucikkek(): void {
+    const newFiltered: { [index: number]: Observable<string[]> } = {};
+
+    this.ujRendeles.tetelek.forEach((tetel, i) => {
+      const currentValue = tetel.arucikkNev.toLowerCase();
+      newFiltered[i] = of(
+        this.arucikkek
+          .map(a => a.megnevezes)
+          .filter(option => option.toLowerCase().includes(currentValue))
+      );
+    });
+
+    this.filteredArucikkek = newFiltered;
+  }
+/*
   addTetel() {
     const index = this.ujRendeles.tetelek.length;
 
@@ -155,6 +204,17 @@ export class Rendelesek implements OnInit {
       startWith(''),
       map(value => this._filterArucikkek(value || ''))
     );
+
+      // Subscribe to update tetel.arucikkNev whenever formControl changes
+      this.arucikkNevControls[index].valueChanges.subscribe(value => {
+        this.ujRendeles.tetelek[index].arucikkNev = value;
+      });
+  }
+
+  removeTetel(index: number) {
+    this.ujRendeles.tetelek.splice(index, 1);
+    delete this.arucikkNevControls[index];
+    delete this.filteredArucikkek[index];
   }
 
   private _filterArucikkek(value: string): string[] {
@@ -163,6 +223,7 @@ export class Rendelesek implements OnInit {
       .map(a => a.megnevezes)
       .filter(option => option.toLowerCase().includes(filterValue));
   }
+  */
     
 }
 

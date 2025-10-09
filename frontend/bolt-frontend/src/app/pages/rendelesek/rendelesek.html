@@ -34,10 +34,10 @@
         <div class="tetel-row">
             <mat-form-field appearance="outline">
                 <mat-label>Árucikk neve</mat-label>
-                <input type="text" [formControl]="arucikkNevControls[i]" matInput [matAutocomplete]="auto" [(ngModel)]="tetel.arucikkNev" name="arucikkNev{{i}}" required />
+                <input type="text" matInput [(ngModel)]="tetel.arucikkNev" (ngModelChange)="onArucikkNevChange(i, tetel.arucikkNev)" [matAutocomplete]="auto"  name="arucikkNev{{i}}" required /> <!--[(ngModel)]="tetel.arucikkNev"-->
                   <mat-autocomplete #auto="matAutocomplete">
-                    @for (arucikk of filteredArucikkek[i] | async; track $index) {
-                      <mat-option [value]="arucikkek"> {{ arucikk }} </mat-option>
+                    @for (arucikk of filteredArucikkek[i] | async; track arucikk) {
+                      <mat-option [value]="arucikk"> {{ arucikk }} </mat-option>
                     }
                   </mat-autocomplete>
               </mat-form-field>
@@ -52,13 +52,13 @@
                 <input matInput [(ngModel)]="tetel.megjegyzes" name="megjegyzes{{i}}" />
             </mat-form-field>
 
-            <button mat-icon-button color="warn" type="button" (click)="ujRendeles.tetelek.splice(i, 1)">
+            <button mat-icon-button color="warn" type="button" (click)="removeTetel(i)">
                 <mat-icon>delete</mat-icon>
             </button>
         </div>
         }
 
-        <button mat-button type="button" (click)="ujRendeles.tetelek.push({ arucikkNev: '', mennyiseg: 1, megjegyzes: '' })">
+        <button mat-button type="button" (click)="addTetel()"> <!--(click)="ujRendeles.tetelek.push({ arucikkNev: '', mennyiseg: 1, megjegyzes: '' })-->
         + Tétel hozzáadása
         </button>
 

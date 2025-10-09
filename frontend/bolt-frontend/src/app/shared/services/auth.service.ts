@@ -43,8 +43,41 @@ export class AuthService {
     return null;
   }
 
+
+  // A függvény mostmár figyeli azt is, hogy a token lejárt-e és ha igen, akkor kiveszi localStorage-ből
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+
+    // Decodeolja a tokent
+    const payload = this.decodeToken(token);
+    if (!payload) return false;
+
+    // Lejárt-e?
+    const expiryTime = payload.exp;
+    if (!expiryTime) return false;
+
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (expiryTime < currentTime) {
+      this.removeToken(); // Ha leájrt akkor kiveszi
+      return false;
+    }
+
+    return true;
+  }
+
+  decodeToken(token: string): any | null {
+    try {
+      const payloadBase64 = token.split('.')[1];
+      const payloadJson = atob(payloadBase64);
+      return JSON.parse(payloadJson);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  removeToken() {
+    localStorage.removeItem('token');
   }
 
   logout(): void {

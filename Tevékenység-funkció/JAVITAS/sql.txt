@@ -1,0 +1,67 @@
+Természetesen! Itt van a **módosított SQL**, ami lehetővé teszi, hogy egy tevékenységhez **több nap + több különböző időpont** is tartozzon.
+
+---
+
+## 🔧 **Módosított SQL szerkezet**
+
+### 1. A meglévő `tevekenyseg_gyakorisag` tábla maradhat (nincs benne `nap` és `ido_pont` külön-külön már)
+
+```sql
+CREATE TABLE tevekenyseg_gyakorisag (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tevekenyseg_id INT,
+    gyakorisag ENUM('heti', 'ketheti', 'haromheti', 'mindig', 'egyszeri'),
+    kezdo_datum DATE,
+    FOREIGN KEY (tevekenyseg_id) REFERENCES tevekenysegek(id)
+);
+```
+
+---
+
+### 2. ❗ Új tábla: **tevekenyseg_idopontok**
+
+Ez a tábla fogja tárolni a `(nap, időpont)` párokat:
+
+```sql
+CREATE TABLE tevekenyseg_idopontok (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gyakorisag_id INT NOT NULL,
+    nap VARCHAR(20) NOT NULL,         -- pl. "hetfo", "kedd"
+    idopont TIME NOT NULL,            -- pl. '07:00:00'
+    FOREIGN KEY (gyakorisag_id) REFERENCES tevekenyseg_gyakorisag(id) ON DELETE CASCADE
+);
+```
+
+---
+
+## 🧠 Példa adatokra
+
+Tegyük fel, van egy tevékenység: `Kávégép tisztítás`.
+
+A következő sorokat kapjuk az adatbázisban:
+
+### `tevekenyseg_gyakorisag` tábla:
+
+| id | tevekenyseg_id | gyakorisag | kezdo_datum |
+| -- | -------------- | ---------- | ----------- |
+| 1  | 5              | heti       | 2025-10-01  |
+
+### `tevekenyseg_idopontok` tábla:
+
+| id | gyakorisag_id | nap   | idopont  |
+| -- | ------------- | ----- | -------- |
+| 1  | 1             | hetfo | 07:00:00 |
+| 2  | 1             | hetfo | 14:00:00 |
+| 3  | 1             | kedd  | 14:00:00 |
+
+---
+
+## ➕ Előnyök
+
+* Tetszőleges számú nap + időpont párost tárolhatsz.
+* Többször is használhatod ugyanazt a napot más időponttal.
+* Könnyen lekérdezhető: „Ma milyen feladatok vannak 14:00-kor?”
+
+---
+
+Ha kéred, a következő lépésben segítek a **JPA entitások és DTO-k** módosításában is ehhez a struktúrához. Szólj bátran, és megyünk tovább!

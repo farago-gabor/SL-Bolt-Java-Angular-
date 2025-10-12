@@ -1,0 +1,125 @@
+Jó kérdés! Ha ehhez a Spring backendhez Angular frontendet szeretnél, akkor egy **Angular service**-t írunk, ami a backend API végpontjaival kommunikál HTTP-n keresztül.
+
+Adok egy példát, hogyan nézhet ki a `TevekenysegService` Angularban, amely lefedi a controller-ed által szolgáltatott endpointokat.
+
+---
+
+## Angular service példa
+
+Feltételezem, hogy az Angular projektedben az `HttpClient` már be van állítva (ez alap Angular modul).
+
+### Lépések:
+
+1. **Generálás:**
+
+```bash
+ng generate service services/tevekenyseg
+```
+
+2. **Implementáció:**
+
+```typescript
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+// DTO-k interfészének egyszerű verziója, lehet tovább fejleszteni
+export interface TevekenysegDTO {
+  megnevezes: string;
+  leiras: string;
+  gyakorisag: string;
+  kezdoDatum: string; // ISO dátum string
+  napokIdopontok?: { [nap: string]: string }; // Map-szerű objektum
+}
+
+export interface TevekenysegNaploDTO {
+  id: number;
+  tevekenyseg: TevekenysegDTO;
+  dolgozoId: number;
+  datum: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TevekenysegService {
+
+  private baseUrl = 'http://localhost:8080/api/tevekenysegek';
+
+  constructor(private http: HttpClient) { }
+
+  // 1.a - Mai elvégzendő feladatok
+  getMaiElvegzendoFeladatok(): Observable<TevekenysegDTO[]> {
+    return this.http.get<TevekenysegDTO[]>(`${this.baseUrl}/ma/elvegzendo`);
+  }
+
+  // 1.b - Feladat elvégzése
+  feladatElvegzese(tevekenysegId: number, dolgozoId: number, datum: string): Observable<void> {
+    const params = new HttpParams()
+      .set('tevekenysegId', tevekenysegId.toString())
+      .set('dolgozoId', dolgozoId.toString())
+      .set('datum', datum);
+    return this.http.post<void>(`${this.baseUrl}/elvegzes`, null, { params });
+  }
+
+  // 2.a - Mai elvégzett feladatok
+  getMaiElvegzettFeladatok(): Observable<TevekenysegNaploDTO[]> {
+    return this.http.get<TevekenysegNaploDTO[]>(`${this.baseUrl}/ma/elvegzettek`);
+  }
+
+  // 3.a - Összes naplóbejegyzés
+  getOsszesNaplobejegyzes(): Observable<TevekenysegNaploDTO[]> {
+    return this.http.get<TevekenysegNaploDTO[]>(`${this.baseUrl}/naplo`);
+  }
+
+  // 4.a - Új tevékenység létrehozása
+  ujTevekenyseg(dto: TevekenysegDTO): Observable<void> {
+    return this.http.post<void>(this.baseUrl, dto);
+  }
+
+  // 4.a - Összes tevékenység lekérdezése
+  getOsszesTevekenyseg(): Observable<TevekenysegDTO[]> {
+    return this.http.get<TevekenysegDTO[]>(this.baseUrl);
+  }
+
+  // 4.a - Tevékenység módosítása
+  modositTevekenyseg(id: number, dto: TevekenysegDTO): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}`, dto);
+  }
+
+  // 4.a - Tevékenység törlése
+  torolTevekenyseg(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+}
+```
+
+---
+
+## Használat
+
+* A komponenseidben be tudod injektálni ezt a service-t:
+
+```typescript
+constructor(private tevekenysegService: TevekenysegService) { }
+
+ngOnInit() {
+  this.tevekenysegService.getMaiElvegzendoFeladatok().subscribe(data => {
+    console.log(data);
+  });
+}
+```
+
+---
+
+## Fontos megjegyzések
+
+* Backend URL-t (`baseUrl`) állítsd be a saját projektednek megfelelően (pl. ha más port vagy domain).
+* A DTO-k itt egyszerűsítve lettek, ha szükséges, készíts részletesebb interface-eket.
+* A dátumokat ISO formátumban küldjük (pl. `"2025-10-10"`), ami a backend által elvárt.
+* A `feladatElvegzese` POST metódusban nincs body (null), hanem csak query paraméterek. Ez megfelel a backend elvárásának.
+* Ha kell, kezelj hibákat az `subscribe` vagy `pipe(catchError(...))` segítségével.
+
+---
+
+Ha szeretnéd, segítek a frontend komponens vagy a formok megírásában is! Szeretnél példát?

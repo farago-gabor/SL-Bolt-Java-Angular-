@@ -1,0 +1,127 @@
+**Igen**, ha **több különálló kérést** küldesz a frontendről (pl. minden nap + időpont páros külön-külön mentése), akkor **a jelenlegi backend modellel is megoldható**, de **csak akkor**, ha:
+
+---
+
+### ✅ **Két feltétel teljesül:**
+
+#### 1. Az adatbázis **tárolja az összes (nap + időpont)** párost egyenként
+
+Ez a része már jó:
+
+```sql
+CREATE TABLE tevekenyseg_gyakorisag_napok (
+    gyakorisag_id INT,
+    nap VARCHAR(20),
+    FOREIGN KEY (gyakorisag_id) REFERENCES tevekenyseg_gyakorisag(id)
+);
+```
+
+✅ Ez lehetővé teszi, hogy egy `tevekenyseg_gyakorisag` rekordhoz **több napot** rendelj.
+
+De! A `ido_pont` mező **jelenleg csak egyetlen időpontot** tárol a `tevekenyseg_gyakorisag` táblában:
+
+```sql
+ido_pont VARCHAR(10)
+```
+
+Ez azt jelenti, hogy **nem tudsz nap + külön időpontokat tárolni**, csak egy közös időpontot minden napra.
+
+---
+
+#### 2. A backend logikája **külön rekordként** tudja kezelni a nap + időpont kombinációkat
+
+Ha frontendről így küldöd be:
+
+```json
+{
+  "megnevezes": "Kávégép tisztítás",
+  "leiras": "...",
+  "gyakorisag": "HETI",
+  "kezdoDatum": "2025-10-01",
+  "napokIdopontok": {
+    "hetfo": "07:00"
+  }
+}
+```
+
+majd külön kérésben:
+
+```json
+{
+  "megnevezes": "Kávégép tisztítás",
+  "leiras": "...",
+  "gyakorisag": "HETI",
+  "kezdoDatum": "2025-10-01",
+  "napokIdopontok": {
+    "hetfo": "14:00"
+  }
+}
+```
+
+A backend **mindkettőt külön menti**, de az történik, hogy:
+
+* Két külön `TevekenysegGyakorisag` rekord jön létre (ami nem ideális), vagy
+* Felülírja az előző nap + időpont párost (ha azonos gyakoriság esetén csak egy rekordot vársz)
+
+---
+
+### 🔧 Mit tehetnél, ha több nap + időpont kombinációt szeretnél valóban kezelni?
+
+#### 🔁 **1. Új tábla: `tevekenyseg_idopontok`**
+
+Hozz létre egy új táblát:
+
+```sql
+CREATE TABLE tevekenyseg_idopontok (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gyakorisag_id INT,
+    nap VARCHAR(20),
+    idopont VARCHAR(10),
+    FOREIGN KEY (gyakorisag_id) REFERENCES tevekenyseg_gyakorisag(id)
+);
+```
+
+Ez lehetővé teszi, hogy:
+
+* Egy `tevekenyseg_gyakorisag` rekordhoz több (nap, időpont) páros tartozzon
+* Bármilyen kombinációt menthess (pl. hétfő 07:00, hétfő 14:00, kedd 14:00)
+
+#### 📦 Modellben:
+
+```java
+@OneToMany(mappedBy = "gyakorisag", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<TevekenysegIdopont> idopontok;
+```
+
+És a `TevekenysegIdopont` entitás:
+
+```java
+@Entity
+public class TevekenysegIdopont {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private String nap;
+    private String idopont;
+
+    @ManyToOne
+    @JoinColumn(name = "gyakorisag_id")
+    private TevekenysegGyakorisag gyakorisag;
+}
+```
+
+---
+
+### 💡 Összefoglalás
+
+| Művelet                                             | Lehetséges a jelenlegi modellel? | Megjegyzés                                          |
+| --------------------------------------------------- | -------------------------------- | --------------------------------------------------- |
+| Több nap mentése egy tevékenységhez                 | ✅                                | `tevekenyseg_gyakorisag_napok` jól működik          |
+| Több időpont egy naphoz                             | ❌                                | Csak 1 `ido_pont` mező van, felülíródik             |
+| Több `(nap + időpont)` pár mentése külön kérésekkel | ⚠️                               | Nem ideális, strukturálatlan, adatismétlést okozhat |
+| Több `(nap + időpont)` kezelés jól strukturáltan    | ✅, ha **új tábla** van hozzá     | `tevekenyseg_idopontok` bevezetése ajánlott         |
+
+---
+
+Ha komolyan szeretnéd használni ezt a logikát (pl. ütemezett tevékenységek, több időpont ugyanazon a napon), **mindenképp érdemes bővíteni a struktúrát**. Szívesen segítek megírni a módosított entitásokat, adatbázist, DTO-kat, és mapper logikát is. Szólj, ha belevágsz!

@@ -1,0 +1,52 @@
+Igen, **nagyon jó hírem van**: a jelenlegi `TevekenysegController` **nem igényel változtatást**, ha az alábbiak teljesülnek:
+
+---
+
+### ✅ Miért nem kell módosítani?
+
+* **`TevekenysegDTO`** már tartalmazza az új `List<NapIdopontDTO> idopontok` mezőt.
+* A POST és PUT végpontok (`/`, `/{id}`) **RequestBody-ként** fogadnak egy `TevekenysegDTO`-t → már tartalmazhat tetszőleges számú nap–időpont párt.
+* A lekérdező (`GET`) végpontok automatikusan visszaadják a DTO-t, benne az új listával.
+
+---
+
+### 📌 Tehát ezek működnek változtatás nélkül:
+
+| Végpont                                | Működik-e? | Megjegyzés                                                   |
+| -------------------------------------- | ---------- | ------------------------------------------------------------ |
+| `POST /api/tevekenysegek`              | ✅          | új nap–időpontokat tud fogadni                               |
+| `PUT /api/tevekenysegek/{id}`          | ✅          | módosítani tudod a nap–időpontokat                           |
+| `GET /api/tevekenysegek`               | ✅          | az új mezők benne lesznek a válaszban                        |
+| `GET /api/tevekenysegek/ma/elvegzendo` | ✅          | háttérben a service a megfelelő nap–időpont alapján dolgozik |
+| `POST /api/tevekenysegek/elvegzes`     | ✅          | nem érinti az új időpontkezelés                              |
+| `GET /api/tevekenysegek/naplo`         | ✅          | napló listázás változatlan marad                             |
+
+---
+
+### 🔍 Egyetlen dolgot figyelj a frontenden:
+
+Amikor a `POST` vagy `PUT` kérésben küldöd a tevékenységet, így nézzen ki az adatstruktúra (JSON-ben):
+
+```json
+{
+  "megnevezes": "Kávégép tisztítás",
+  "leiras": "Kávégép napi karbantartása",
+  "gyakorisag": "HETI",
+  "kezdoDatum": "2025-10-13",
+  "idopontok": [
+    { "nap": "hetfo", "idoPont": "07:00" },
+    { "nap": "hetfo", "idoPont": "14:00" },
+    { "nap": "kedd", "idoPont": "14:00" }
+  ]
+}
+```
+
+---
+
+### ✅ Összefoglalva:
+
+* **Controllered 100%-ban kompatibilis** a módosításokkal.
+* Nem kell új végpontot létrehozni.
+* Minden logika a service-ben és a mapperben lett átvezetve.
+
+Ha szeretnéd, átnézhetjük a frontend kód mintáját is, hogy tudd, hogyan küldd be az adatokat több időponttal.

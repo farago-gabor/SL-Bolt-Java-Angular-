@@ -1,0 +1,70 @@
+Ez egy fontos kérdés, és jó, hogy ezt átgondolod!
+
+### Backend és DTO szinten:
+
+A `TevekenysegDTO`-ban a napok és időpontok **Map<String, String>** típusban vannak kezelve, ez tökéletesen megfelel az Angular JSON objektumának.
+
+### De mi van az adatbázissal?
+
+A backend modelljeid alapján:
+
+* **TevekenysegGyakorisag** entitásban a `napok` egy `List<String>` (pl. `@ElementCollection` vagy hasonló),
+* `idoPont` egy egyszerű String, ami az időpontot tárolja.
+
+Ez a backend oldalon azt jelenti, hogy **nem tárolsz párban nap+időpontot**, hanem
+
+* több napot (`List<String> napok`),
+* és egyetlen időpontot (`String idoPont`) minden napra.
+
+---
+
+### Ez okozhat problémát, ha *több különböző naphoz más-más időpontot szeretnél megadni*!
+
+Hiszen a modell jelenleg csak egyetlen időpontot tud tárolni, amit az összes napra alkalmaz.
+
+---
+
+### Mit lehet tenni?
+
+#### 1. Egyszerű megoldás (ami most működik):
+
+* Minden nap ugyanaz az időpont.
+* A backend csak 1 időpontot tárol, amit az összes napra alkalmaz.
+
+#### 2. Komplex megoldás:
+
+* Módosítani kell a backend modellt, hogy **a nap és időpont párja külön legyen tárolva**.
+* Pl. létrehozni egy új entitást vagy `@ElementCollection`-t, ami párban tárolja a napot és az időpontot, pl:
+
+```java
+@ElementCollection
+@CollectionTable(name = "tevekenyseg_nap_idopont", joinColumns = @JoinColumn(name = "gyakorisag_id"))
+@MapKeyColumn(name = "nap")
+@Column(name = "idopont")
+private Map<String, String> napokIdopontok;
+```
+
+Ez az adatbázis szinten egy külön táblát hozna létre, ahol napok és időpontok páronként vannak tárolva.
+
+---
+
+### Összefoglalva:
+
+| Szint          | Jelenlegi állapot                                | Javaslat                               |
+| -------------- | ------------------------------------------------ | -------------------------------------- |
+| Frontend       | Több nap/időpont pár tárolható JSON objektumban  | OK (így tovább)                        |
+| DTO            | Map<String, String> nap/időpont                  | OK (így tovább)                        |
+| Backend modell | `List<String> napok` + egyetlen `String idoPont` | Nem támogatja több időpont eltárolását |
+| Adatbázis      | Lista napokra + egy időpont                      | Nem támogatja több időpont eltárolását |
+
+---
+
+### Mit javaslok?
+
+Ha tényleg több naphoz különböző időpontokat akarsz tárolni, akkor **a backend adatmodell és az adatbázis struktúráját is módosítani kell**, hogy a `napokIdopontok` Map-et közvetlenül tárold (pl. `@ElementCollection Map<String, String>` formában).
+
+Ha ehhez segítség kell, tudok segíteni a backend módosításában is.
+
+---
+
+Szeretnéd, hogy segítsek a backend modell és adatbázis módosításában, hogy teljesen megfeleljen ennek a több nap-időpont páros megoldásnak?

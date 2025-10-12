@@ -6,18 +6,25 @@ INSERT INTO dolgozok (nev, email, jelszo, szerepkor) VALUES
 ('Nagy Péter', 'peter@bolt.hu', 'dolgozo123', 'dolgozo');
 
 -- Tevékenységek
-INSERT INTO tevekenysegek (megnevezes, rendszeres, reszletes_leiras) VALUES
-('Kávégép tisztítás', TRUE, 'A kávégép napi tisztítása és karbantartása a megfelelő működés érdekében.'),
-('Felmosás', TRUE, 'A bolti terület napi felmosása, hogy tiszta és higiénikus maradjon.'),
-('Polc átrendezés', FALSE, 'A polcok átrendezése igény szerint, hogy a termékek elérhetősége javuljon.'),
-('Raktár takarítás', FALSE, 'A raktár rendbetétele és tisztítása.');
+INSERT INTO tevekenysegek (megnevezes, leiras) VALUES
+('Kávégép tisztítás', 'A kávégép napi tisztítása és karbantartása a megfelelő működés érdekében.'),
+('Felmosás', 'A bolti terület napi felmosása, hogy tiszta és higiénikus maradjon.'),
+('Polc átrendezés', 'A polcok átrendezése igény szerint, hogy a termékek elérhetősége javuljon.'),
+('Raktár takarítás', 'A raktár rendbetétele és tisztítása.');
 
--- Tevékenység gyakoriság
-INSERT INTO tevekenyseg_gyakorisag (tevekenyseg_id, gyakorisag, napok, ido_pontra_datum) VALUES
-(1, 'naponta', NULL, '08:00'),  -- Kávégép tisztítás napi, 08:00-kor
-(2, 'heti', 'hétfő, szerda, péntek', '09:00'),  -- Felmosás heti 3 alkalommal
-(3, 'specifikus', NULL, NULL),  -- Polc átrendezés specifikus, nincsen fix időpont
-(4, 'havonta', NULL, NULL);  -- Raktár takarítás havi
+-- Tevékenység gyakoriság (alapadatok)
+INSERT INTO tevekenyseg_gyakorisag (tevekenyseg_id, gyakorisag, ido_pont, kezdo_datum) VALUES
+(1, 'mindig', '08:00', '2025-06-30'),         -- Kávégép tisztítás: napi
+(2, 'heti', '09:00', '2025-06-30'),           -- Felmosás: heti 3 nap
+(3, 'egyszeri', NULL, '2025-07-03'),          -- Polc átrendezés: egyszeri
+(4, 'haromheti', NULL, '2025-06-01');         -- Raktár takarítás: háromhetente
+
+-- Tevékenység gyakoriság napok (csak azokhoz, ahol van nap megadva)
+-- Felmosás (id = 2): hétfő, szerda, péntek
+INSERT INTO tevekenyseg_gyakorisag_napok (gyakorisag_id, nap) VALUES
+(2, 'hetfo'),
+(2, 'szerda'),
+(2, 'pentek');
 
 -- Tevékenység napló
 INSERT INTO tevekenyseg_naplo (tevekenyseg_id, dolgozo_id, datum, megcsinalta) VALUES

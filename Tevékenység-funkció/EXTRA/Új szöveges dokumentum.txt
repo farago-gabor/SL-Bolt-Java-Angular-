@@ -1,0 +1,122 @@
+Nagyon jó kérdés! Akkor most röviden és érthetően elmagyarázom, **mik azok a Flyway és Spring Data JPA initializer szkriptek**, **miért lehetnek hasznosak neked**, és hogyan használhatod őket a **te saját projektedben – például a tevékenységek és gyakoriságok adatainak betöltésére**.
+
+---
+
+## ✅ **1. Flyway – Adatmigrációs eszköz**
+
+### 🧠 Mi az a Flyway?
+
+A **Flyway** egy Java-s (Spring Boot-os) eszköz, amivel **adatbázis verziókat lehet nyilvántartani és frissíteni**. Ha változik az adatbázisod (pl. új tábla, mező, tesztadat), akkor egy **SQL fájlt** készítesz, és Flyway automatikusan lefuttatja **alkalmazásindításkor**.
+
+---
+
+### 🔧 Hogyan működik?
+
+1. A projekted `resources/db/migration/` mappájába teszel egy SQL fájlt, pl.:
+
+   ```
+   V1__init_schema.sql
+   V2__sample_data.sql
+   ```
+
+2. Ez a fájl így nézhet ki:
+
+```sql
+-- V2__sample_data.sql
+
+INSERT INTO tevekenysegek (megnevezes, leiras) VALUES
+('Kávégép tisztítás', 'Reggel és délután'),
+('Pult fertőtlenítés', 'Műszak végén');
+
+INSERT INTO tevekenyseg_gyakorisag (tevekenyseg_id, gyakorisag, kezdo_datum) VALUES
+(1, 'heti', '2025-10-13'),
+(2, 'heti', '2025-10-13');
+
+INSERT INTO tevekenyseg_gyakorisag_napok (gyakorisag_id, nap, ido_pont) VALUES
+(1, 'hetfo', '07:00'),
+(1, 'hetfo', '14:00'),
+(1, 'kedd', '14:00'),
+(2, 'hetfo', '21:00'),
+(2, 'szerda', '21:00');
+```
+
+3. A Flyway ezt automatikusan végrehajtja induláskor.
+
+---
+
+### ✅ Mikor hasznos?
+
+* Lokális teszteléshez
+* Tesztadatok betöltéséhez
+* Verziókövetéshez (hogy melyik migrációt futtatta már a rendszer)
+* CI/CD-ben automatikusan frissül az adatbázis
+
+---
+
+## ✅ **2. Spring Data JPA Initializer – Adatok betöltése Java kódból**
+
+### 🧠 Mi ez?
+
+A Spring Boot tud adatokat betölteni **Java kódon keresztül is**, induláskor. Ezt hívják gyakran "DataInitializer"-nek vagy "CommandLineRunner"-nek.
+
+---
+
+### 🔧 Hogyan néz ki?
+
+```java
+@Component
+@RequiredArgsConstructor
+public class TevekenysegDataInitializer implements CommandLineRunner {
+
+    private final TevekenysegRepository tevekenysegRepo;
+    private final TevekenysegGyakorisagRepository gyakRepo;
+
+    @Override
+    public void run(String... args) {
+        Tevekenyseg tevekenyseg = new Tevekenyseg();
+        tevekenyseg.setMegnevezes("Kávégép tisztítás");
+        tevekenyseg.setLeiras("Reggel és délután");
+        tevekenysegRepo.save(tevekenyseg);
+
+        TevekenysegGyakorisag gyak = new TevekenysegGyakorisag();
+        gyak.setTevekenyseg(tevekenyseg);
+        gyak.setGyakorisag(TevekenysegGyakorisag.Gyakorisag.HETI);
+        gyak.setKezdoDatum(LocalDate.of(2025, 10, 13));
+        gyak.setNapok(List.of("hetfo", "kedd"));
+        gyak.setIdoPont("07:00");  // ez elavult, ha napok+idopontot külön tárolsz
+        gyakRepo.save(gyak);
+    }
+}
+```
+
+> ☝️ Ha `napok + időpontok` már külön táblába kerülnek (`nap` + `ido_pont`), akkor azok `@ElementCollection` entitáson keresztül kerülnek mentésre.
+
+---
+
+## 🔍 Összehasonlítás
+
+| Tulajdonság              | **Flyway**                            | **Data Initializer (Java)**        |
+| ------------------------ | ------------------------------------- | ---------------------------------- |
+| Nyelv                    | SQL                                   | Java (Spring Boot)                 |
+| Mikor fut                | Alkalmazásinduláskor                  | Alkalmazásinduláskor               |
+| Jó adattípus tesztelésre | ✅ Igen                                | ✅ Igen                             |
+| Előny                    | Verziózott, adatbázisszinten történik | Teljes kontroll Java logikában     |
+| Hátrány                  | Csak SQL tudás kell hozzá             | Kicsit több kód, több karbantartás |
+
+---
+
+## 🧠 Mikor melyiket használd?
+
+| Használat célja                                          | Javasolt megoldás     |
+| -------------------------------------------------------- | --------------------- |
+| Adatbázis szerkezet + tesztadatok verziózott betöltése   | ✅ **Flyway**          |
+| Dinamikus, logikaalapú betöltés (pl. csak ha nincs adat) | ✅ **DataInitializer** |
+
+---
+
+Ha szeretnéd, küldhetek:
+
+* Egy kész **Flyway SQL szkriptet** (`V2__sample_data.sql`)
+* Vagy egy teljes **Java DataInitializer** osztályt
+
+Mondd meg, melyiket szeretnéd elsőként 😄

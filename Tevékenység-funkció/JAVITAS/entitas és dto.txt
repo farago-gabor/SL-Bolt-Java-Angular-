@@ -1,0 +1,127 @@
+Nagyszerű, akkor folytassuk a **JPA entitások** és **DTO-k** módosításával úgy, hogy illeszkedjenek a korábban megadott új SQL struktúrához, azaz hogy **egy tevékenységhez több (nap, időpont)** párost tudjunk rendelni.
+
+---
+
+## ✅ **1. ÚJ entitás: `TevekenysegIdopont`**
+
+Ez felel meg az új SQL-táblának (`tevekenyseg_idopontok`):
+
+```java
+package hu.projekt.bolt.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "tevekenyseg_idopontok")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class TevekenysegIdopont {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "gyakorisag_id")
+    private TevekenysegGyakorisag gyakorisag;
+
+    private String nap;        // például: "hetfo", "kedd", stb.
+
+    private String idopont;    // például: "07:00", "14:00"
+}
+```
+
+---
+
+## ✅ **2. Módosított `TevekenysegGyakorisag` entitás**
+
+Mostantól tartalmaz egy `List<TevekenysegIdopont>` mezőt:
+
+```java
+@OneToMany(mappedBy = "gyakorisag", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<TevekenysegIdopont> idopontok;
+```
+
+**Teljesen kibővített entitás:**
+
+```java
+@Entity
+@Table(name = "tevekenyseg_gyakorisag")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class TevekenysegGyakorisag {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "tevekenyseg_id")
+    private Tevekenyseg tevekenyseg;
+
+    @Enumerated(EnumType.STRING)
+    private Gyakorisag gyakorisag;
+
+    private LocalDate kezdoDatum;
+
+    @OneToMany(mappedBy = "gyakorisag", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TevekenysegIdopont> idopontok;
+
+    public enum Gyakorisag {
+        HETI,
+        KETHETI,
+        HAROMHETI,
+        MINDIG,
+        EGYSZERI
+    }
+}
+```
+
+---
+
+## ✅ **3. DTO: `TevekenysegDTO` módosítása**
+
+Most nem `Map<String, String>`, hanem egy külön lista a (nap, időpont) pároknak:
+
+```java
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class TevekenysegDTO {
+
+    private String megnevezes;
+    private String leiras;
+    private String gyakorisag;
+    private LocalDate kezdoDatum;
+
+    private List<NapIdopontDTO> idopontok;  // új
+}
+```
+
+---
+
+### ✅ `NapIdopontDTO` (új DTO a párokhoz)
+
+```java
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class NapIdopontDTO {
+    private String nap;       // pl.: "hetfo"
+    private String idopont;   // pl.: "07:00"
+}
+```
+
+---
+
+## 🧭 Következő lépés:
+
+Most már a backend képes több (nap, időpont) párt kezelni egy tevékenységnél. A következő lépés a:
+
+* ✅ **MapStruct mapper** módosítása
+* ✅ **Service réteg** frissítése (új entitások mentése, módosítása, törlése)
+
+Ha szeretnéd, folytathatjuk ezekkel is. Szólj, és jön a mapper/frissített service kód is.

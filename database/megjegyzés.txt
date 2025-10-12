@@ -1,0 +1,14 @@
+A gyakorisag_id értékek (2 stb.) csak akkor érvényesek, ha az adatbázis üres és ez az első adatfeltöltés — mert ekkor AUTO_INCREMENT alapján ezek az ID-k ténylegesen 1–4 lesznek.
+
+Ha nem vagy biztos benne, nézd meg az ID-kat a tevekenyseg_gyakorisag táblában és frissítsd a tevekenyseg_gyakorisag_napok INSERT-eket, ha szükséges.
+
+A kezdo_datum mezők fontosak, különösen a ketheti és haromheti ismétlődéseknél (pl. Raktár takarítás).
+
+
+TevékenységService:
+	- feladatElvegzese(...): Ha időpont is fontos a jövőben (pl. 08:00), akkor LocalDate → LocalDateTime lehetne. Most ez nem kritikus.
+	- ujTevekenyseg(...): 
+		- A jelenlegi modell nem támogat különböző időpontokat napokra, de a DTO (Map<String, String>) ezt sugallja.
+		- Most viszont csak egy időpontot vesz ki (az elsőt). Ez működik, ha minden napra ugyanaz az időpont.
+		- Ha a jövőben valóban más időpontok lesznek napokra, ezt a logikát módosítani kell.
+	- torolTevekenyseg(...): Később hasznos lehet naplóbejegyzések törlését is mérlegelni, ha a kapcsolódó Tevekenyseg törlődik. Jelenleg a TevekenysegNaplo tábla megtartja a bejegyzést, de az idegen kulcs lehet ON DELETE SET NULL vagy ON DELETE CASCADE, ami adatbázistól függ.

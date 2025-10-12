@@ -1,0 +1,95 @@
+Rendben! Nézzük, hogyan kell módosítani a **`TevekenysegServiceImpl`** osztályt, hogy támogassa az új `idopontok` struktúrát (azaz: több nap + több időpont tevékenységenként).
+
+---
+
+### ✅ Előkészület: Használt osztályok
+
+* DTO: `TevekenysegDTO` ➝ tartalmaz `List<NapIdopontDTO>`
+* Entitás: `TevekenysegGyakorisag` ➝ tartalmaz `List<TevekenysegIdopont>`
+
+Mapperen keresztül már tudjuk konvertálni oda-vissza.
+
+---
+
+## 🔧 1. Új tevékenység létrehozása
+
+### ✏️ `ujTevekenyseg()` metódus frissítve:
+
+```java
+@Override
+public void ujTevekenyseg(TevekenysegDTO dto) {
+    Tevekenyseg tevekenyseg = new Tevekenyseg();
+    tevekenyseg.setMegnevezes(dto.getMegnevezes());
+    tevekenyseg.setLeiras(dto.getLeiras());
+    tevekenysegRepository.save(tevekenyseg);
+
+    TevekenysegGyakorisag gyak = new TevekenysegGyakorisag();
+    gyak.setTevekenyseg(tevekenyseg);
+    gyak.setGyakorisag(TevekenysegGyakorisag.Gyakorisag.valueOf(dto.getGyakorisag().toUpperCase()));
+    gyak.setKezdoDatum(dto.getKezdoDatum());
+
+    // Mapstruct segítségével alakítjuk DTO → entitás
+    List<TevekenysegIdopont> idopontok = mapper.mapDTOsToIdopontok(dto.getIdopontok());
+    // Állítsuk be a gyakoriság kapcsolatot az időpontokban is
+    for (TevekenysegIdopont i : idopontok) {
+        i.setGyakorisag(gyak);
+    }
+
+    gyak.setIdopontok(idopontok);
+    gyakorisagRepository.save(gyak);
+}
+```
+
+---
+
+## 🔁 2. Tevékenység módosítása
+
+### ✏️ `modositTevekenyseg()` metódus frissítve:
+
+```java
+@Override
+public void modositTevekenyseg(int tevekenysegId, TevekenysegDTO dto) {
+    Tevekenyseg tevekenyseg = tevekenysegRepository.findById(tevekenysegId)
+            .orElseThrow(() -> new RuntimeException("Tevékenység nem található: " + tevekenysegId));
+
+    tevekenyseg.setMegnevezes(dto.getMegnevezes());
+    tevekenyseg.setLeiras(dto.getLeiras());
+    tevekenysegRepository.save(tevekenyseg);
+
+    TevekenysegGyakorisag gyak = gyakorisagRepository.findByTevekenyseg(tevekenyseg)
+            .orElseThrow(() -> new RuntimeException("Gyakoriság nem található"));
+
+    gyak.setGyakorisag(TevekenysegGyakorisag.Gyakorisag.valueOf(dto.getGyakorisag().toUpperCase()));
+    gyak.setKezdoDatum(dto.getKezdoDatum());
+
+    // 🔄 Töröljük a meglévő időpontokat és újakat állítunk be
+    gyak.getIdopontok().clear(); // csak ha CascadeType.ALL + orphanRemoval = true van beállítva!
+    List<TevekenysegIdopont> ujIdopontok = mapper.mapDTOsToIdopontok(dto.getIdopontok());
+    for (TevekenysegIdopont i : ujIdopontok) {
+        i.setGyakorisag(gyak);
+    }
+    gyak.setIdopontok(ujIdopontok);
+
+    gyakorisagRepository.save(gyak);
+}
+```
+
+> ☝️ Fontos: az entitásban a `@OneToMany(mappedBy = ..., cascade = CascadeType.ALL, orphanRemoval = true)` annotációk legyenek megfelelően beállítva a `TevekenysegGyakorisag` → `TevekenysegIdopont` kapcsolatnál.
+
+---
+
+## 🗑️ 3. Törlés: nincs változás
+
+A `torolTevekenyseg()` metódus nem igényel módosítást, ha az entitások közt a cascade törlés rendben van.
+
+---
+
+## 📥 4. Lekérdezés (összes, napi stb.)
+
+Ezek már a `mapper.toTevekenysegDTO(...)` függvényt használják, tehát az új `idopontok` mező automatikusan átkerül a DTO-ba.
+
+---
+
+## ✅ Készen vagyunk a service réteggel!
+
+Szólj, ha szeretnéd, hogy megnézzük, hogyan jelenítsd meg ezt a frontenden (pl. Angularon), vagy ha kell egy rövid teszt eset.

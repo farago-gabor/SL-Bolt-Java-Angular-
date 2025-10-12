@@ -1,0 +1,92 @@
+Nagyon szívesen! Most pedig nézzük, **hogyan módosítsd a legelső üzenetedben küldött SQL próbaadatokat**, hogy **több nap–időpont párt** is legyen egy tevékenységhez (pl. „kávégép tisztítás” hétfő 07:00 és 14:00, kedd 14:00 stb.).
+
+---
+
+## ✅ 1. **Táblák frissítése** *(ha még nem tetted meg)*
+
+A `tevekenyseg_gyakorisag_napok` táblát módosítanod kell, hogy ne csak `nap`, hanem `ido_pont` is legyen benne:
+
+```sql
+DROP TABLE IF EXISTS tevekenyseg_gyakorisag_napok;
+
+CREATE TABLE tevekenyseg_gyakorisag_napok (
+    gyakorisag_id INT,
+    nap VARCHAR(20),       -- pl. 'hetfo'
+    ido_pont VARCHAR(10),  -- pl. '07:00'
+    FOREIGN KEY (gyakorisag_id) REFERENCES tevekenyseg_gyakorisag(id) ON DELETE CASCADE
+);
+```
+
+> ☝️ Fontos: Ezt **egyszer** kell elvégezni, mielőtt a próbaadatokat beilleszted.
+
+---
+
+## ✅ 2. **Próbaadat beszúrás – több nap–időpont egy tevékenységhez**
+
+Itt egy teljes SQL szkript, amit nyugodtan futtathatsz tesztelésre.
+
+```sql
+-- Új tevékenység
+INSERT INTO tevekenysegek (megnevezes, leiras)
+VALUES ('Kávégép tisztítás', 'Kávégép napi karbantartása');
+
+-- Tegyük fel, hogy ez az előző ID = 1
+-- Gyakoriság hozzárendelése: heti, kezdő dátum: 2025-10-13
+INSERT INTO tevekenyseg_gyakorisag (tevekenyseg_id, gyakorisag, kezdo_datum)
+VALUES (1, 'heti', '2025-10-13');
+
+-- Tegyük fel, hogy ez az előző ID = 1 is (gyakoriság)
+-- Nap–időpont párok (több időpont ugyanarra a napra is!)
+INSERT INTO tevekenyseg_gyakorisag_napok (gyakorisag_id, nap, ido_pont)
+VALUES 
+(1, 'hetfo', '07:00'),
+(1, 'hetfo', '14:00'),
+(1, 'kedd', '14:00');
+```
+
+---
+
+## ✅ 3. (Opcionális) Több tevékenység hozzáadása
+
+```sql
+-- Második tevékenység
+INSERT INTO tevekenysegek (megnevezes, leiras)
+VALUES ('Pult fertőtlenítése', 'A pult napi fertőtlenítése műszak végén.');
+
+INSERT INTO tevekenyseg_gyakorisag (tevekenyseg_id, gyakorisag, kezdo_datum)
+VALUES (2, 'heti', '2025-10-13');
+
+-- ID = 2 esetén:
+INSERT INTO tevekenyseg_gyakorisag_napok (gyakorisag_id, nap, ido_pont)
+VALUES 
+(2, 'hetfo', '21:00'),
+(2, 'szerda', '21:00'),
+(2, 'pentek', '21:00');
+```
+
+---
+
+## 🧪 Teszteléshez hasznos
+
+Ha ki akarod olvasni, mit tároltál:
+
+```sql
+SELECT t.megnevezes, g.gyakorisag, n.nap, n.ido_pont
+FROM tevekenysegek t
+JOIN tevekenyseg_gyakorisag g ON t.id = g.tevekenyseg_id
+JOIN tevekenyseg_gyakorisag_napok n ON g.id = n.gyakorisag_id;
+```
+
+---
+
+## ✅ Összefoglalás
+
+A próbaadatok módosításához:
+
+1. Frissítsd a `tevekenyseg_gyakorisag_napok` táblát: `ido_pont` mezővel.
+2. Illessz be minden nap–időpont párt külön sorba.
+3. Teszteléshez a fenti `SELECT` lekérdezéssel ellenőrizheted a beillesztett adatokat.
+
+---
+
+Ha szeretnéd, szívesen készítek neked komplett **Flyway** vagy **Spring Data JPA initializer** szkriptet is a tesztadatokhoz.

@@ -46,19 +46,23 @@ Ezt akár helyettesíthetjük kezdési dátummal és akkor a kovetkezo dátum el
 
 */
 
+-- Tevékenység gyakoriság tábla (a rendszerességet és gyakoriságot kezeljük)
 CREATE TABLE tevekenyseg_gyakorisag (
-    id INT AUTO_INCREMENT PRIMARY KEY, 
+    id INT AUTO_INCREMENT PRIMARY KEY,
     tevekenyseg_id INT,
     gyakorisag ENUM('heti', 'ketheti', 'haromheti', 'mindig', 'egyszeri'),
-    ido_pont VARCHAR(10),       -- TIME is okay too, but VARCHAR is easier for "06:00" etc.
     kezdo_datum DATE,
     FOREIGN KEY (tevekenyseg_id) REFERENCES tevekenysegek(id)
 );
 
-CREATE TABLE tevekenyseg_gyakorisag_napok (
-    gyakorisag_id INT,
-    nap VARCHAR(20),  -- e.g., 'hetfo', 'kedd'
-    FOREIGN KEY (gyakorisag_id) REFERENCES tevekenyseg_gyakorisag(id)
+
+-- Ez a tábla fogja tárolni a (nap, időpont) párokat:
+CREATE TABLE tevekenyseg_idopontok (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gyakorisag_id INT NOT NULL,
+    nap VARCHAR(20) NOT NULL,         -- pl. "hetfo", "kedd"
+    idopont TIME NOT NULL,            -- pl. '07:00:00'
+    FOREIGN KEY (gyakorisag_id) REFERENCES tevekenyseg_gyakorisag(id) ON DELETE CASCADE
 );
 
 -- Tevékenység napló (végrehajtások)

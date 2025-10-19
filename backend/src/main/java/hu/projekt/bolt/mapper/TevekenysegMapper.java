@@ -1,10 +1,13 @@
 package hu.projekt.bolt.mapper;
 
+import hu.projekt.bolt.dto.NapIdopontDTO;
 import hu.projekt.bolt.dto.TevekenysegDTO;
 import hu.projekt.bolt.dto.TevekenysegNaploDTO;
 import hu.projekt.bolt.model.Tevekenyseg;
 import hu.projekt.bolt.model.TevekenysegGyakorisag;
+import hu.projekt.bolt.model.TevekenysegIdopont;
 import hu.projekt.bolt.model.TevekenysegNaplo;
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -21,38 +24,31 @@ public interface TevekenysegMapper {
     TevekenysegNaploDTO TevekenysegNaploToDTO(TevekenysegNaplo tevekenysegNaplo);
 
 
-    /* AZ ALÁBBI DOLGOKAT KELL MEGVALÓSÍTANI:
-
-        - A napok és időpontok lehetnek NULL, ha a gyakorsiág MINDIG-re van állítva, ekkor nem kell lekezelni
-        - A tevékenységet úgy mappelje a TevekenysegDTO-hoz hogy a napok és időpontok egy Map-ben(kulcs - érték) tárolja el
-
-
-            private String> gyakorisag;
-            private Map<String, String> napokIdopontok;  // Map, ahol a napokhoz rendeljük az időpontokat (pl. "hétfő": "06:00", "kedd": "09:00")
-
-     */
-
     @Mapping(source = "tevekenyseg.megnevezes", target = "megnevezes")
     @Mapping(source = "tevekenyseg.leiras", target = "leiras")
     @Mapping(source = "tevekenysegGyakorisag.gyakorisag", target = "gyakorisag")
     @Mapping(source = "tevekenysegGyakorisag.kezdoDatum", target = "kezdoDatum")
-    @Mapping(source = "tevekenysegGyakorisag", target = "napokIdopontok", qualifiedByName = "mapNapokIdopontok")
+    @Mapping(source = "tevekenysegGyakorisag.idopontok", target = "idopontok")
     TevekenysegDTO toTevekenysegDTO(Tevekenyseg tevekenyseg, TevekenysegGyakorisag tevekenysegGyakorisag);
 
-    @Named("mapNapokIdopontok")
-    default Map<String, String> mapNapokIdopontok(TevekenysegGyakorisag gyakorisag) {
-        Map<String, String> napokIdopontok = new HashMap<>();
+    @IterableMapping(qualifiedByName = "idopontToDto")
+    List<NapIdopontDTO> mapIdopontokToDTOs(List<TevekenysegIdopont> idopontok);
 
-        // Ha gyakoriság MINDIG, akkor ne kezeljünk napokat és időpontokat
-        if (gyakorisag.getGyakorisag() == TevekenysegGyakorisag.Gyakorisag.MINDIG) {
-            return napokIdopontok;  // Visszaadjuk az üres map-et
-        }
-
-        // Más esetekben figyeljük a napokat és időpontokat
-        for (String nap : gyakorisag.getNapok()) {
-            napokIdopontok.put(nap, gyakorisag.getIdoPont());
-        }
-
-        return napokIdopontok;
+    @Named("idopontToDto")
+    default NapIdopontDTO idopontToDto(TevekenysegIdopont idopont) {
+        if (idopont == null) return null;
+        return new NapIdopontDTO(idopont.getNap(), idopont.getIdopont());
     }
+
+    // Ha később DTO-ból vissza akarsz mappelni entitásba:
+    @Named("dtoToIdopont")
+    default TevekenysegIdopont dtoToIdopont(NapIdopontDTO dto) {
+        TevekenysegIdopont idopont = new TevekenysegIdopont();
+        idopont.setNap(dto.getNap());
+        idopont.setIdopont(dto.getIdopont());
+        return idopont;
+    }
+
+    @IterableMapping(qualifiedByName = "dtoToIdopont")
+    List<TevekenysegIdopont> mapDTOsToIdopontok(List<NapIdopontDTO> dtos);
 }

@@ -15,5 +15,6 @@ public class TevekenysegDTO {
     private String leiras;
     private String gyakorisag;
     private LocalDate kezdoDatum;
-    private Map<String, String> napokIdopontok;  // Map, ahol a napokhoz rendeljük az időpontokat (pl. "hétfő": "06:00", "kedd": "09:00")
+    private List<NapIdopontDTO> idopontok;
+
 }

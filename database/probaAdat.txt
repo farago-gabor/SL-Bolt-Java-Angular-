@@ -2,7 +2,7 @@ USE bolt;
 
 -- Dolgozók
 INSERT INTO dolgozok (nev, email, jelszo, szerepkor) VALUES
-('Kiss Anna', 'anna@bolt.hu', 'admin123', 'admin'),
+('Kiss Anna', 'anna@bolt.hu', '$2a$10$juqQeAR/7bB46ib8zN2OD.CzbCCZA3oVvWrei3AMT4QvqV8ZVyg2m', 'admin'),
 ('Nagy Péter', 'peter@bolt.hu', 'dolgozo123', 'dolgozo');
 
 -- Tevékenységek

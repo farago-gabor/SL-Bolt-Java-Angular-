@@ -1,0 +1,108 @@
+<h1>Tevékenységek</h1>
+
+<!-- Mai feladatok -->
+<h2>Mai elvégzendő feladatok</h2>
+<mat-table [dataSource]="maiElvegzendo">
+  <ng-container matColumnDef="megnevezes">
+    <mat-header-cell *matHeaderCellDef> Feladat </mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.megnevezes }}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="leiras">
+    <mat-header-cell *matHeaderCellDef> Leírás </mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.leiras }}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="muvelet">
+    <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+    <mat-cell *matCellDef="let t">
+      <button mat-raised-button color="primary" (click)="elvegzes(t)">Elvégezve</button>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="['megnevezes','leiras','muvelet']"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: ['megnevezes','leiras','muvelet']"></mat-row>
+</mat-table>
+
+<!-- Mai elvégzettek -->
+<h2>Mai elvégzett feladatok</h2>
+<mat-table [dataSource]="maiElvegzettek">
+  <ng-container matColumnDef="megnevezes">
+    <mat-header-cell *matHeaderCellDef> Feladat </mat-header-cell>
+    <mat-cell *matCellDef="let n">{{ n.megnevezes }}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="dolgozo">
+    <mat-header-cell *matHeaderCellDef> Dolgozó </mat-header-cell>
+    <mat-cell *matCellDef="let n">{{ n.dolgozoNev }}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="datum">
+    <mat-header-cell *matHeaderCellDef> Dátum </mat-header-cell>
+    <mat-cell *matCellDef="let n">{{ n.datum }}</mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="['megnevezes','dolgozo','datum']"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: ['megnevezes','dolgozo','datum']"></mat-row>
+</mat-table>
+
+<!-- Admin panel -->
+@if (isAdmin) {
+  <mat-accordion>
+    <mat-expansion-panel [(expanded)]="ujTevekenysegMegjelenitese">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Új tevékenység hozzáadása</mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <form (ngSubmit)="submitUjTevekenyseg()">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Megnevezés</mat-label>
+          <input matInput [(ngModel)]="ujTevekenyseg.megnevezes" name="megnevezes" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Leírás</mat-label>
+          <input matInput [(ngModel)]="ujTevekenyseg.leiras" name="leiras" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Dátum</mat-label>
+          <input matInput [matDatepicker]="picker" [(ngModel)]="ujTevekenyseg.kezdoDatum" name="datum" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit">Mentés</button>
+      </form>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <h2>Összes tevékenység (Admin)</h2>
+  <mat-table [dataSource]="osszesTevekenyseg">
+    <ng-container matColumnDef="megnevezes">
+      <mat-header-cell *matHeaderCellDef> Feladat </mat-header-cell>
+      <mat-cell *matCellDef="let t">{{ t.megnevezes }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="leiras">
+      <mat-header-cell *matHeaderCellDef> Leírás </mat-header-cell>
+      <mat-cell *matCellDef="let t">{{ t.leiras }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="datum">
+      <mat-header-cell *matHeaderCellDef> Dátum </mat-header-cell>
+      <mat-cell *matCellDef="let t">{{ t.datum }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="muveletek">
+      <mat-header-cell *matHeaderCellDef> Műveletek </mat-header-cell>
+      <mat-cell *matCellDef="let t">
+        <button mat-button color="accent" (click)="modositInit(t)">Módosítás</button>
+        <button mat-button color="warn" (click)="torol(t.id)">Törlés</button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="['megnevezes','leiras','datum','muveletek']"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: ['megnevezes','leiras','datum','muveletek']"></mat-row>
+  </mat-table>
+}

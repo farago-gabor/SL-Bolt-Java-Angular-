@@ -1,31 +1,57 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { TevekenysegDTO } from '../../models/tevekenyseg-dto.model';
+import { TevekenysegNaploDTO } from '../../models/tevekenyseg-naplo-dto.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TevekenysegService {
   
-    private url = `${environment.apiUrl}/rendelesek`;
+    private url = `${environment.apiUrl}/tevekenysegek`;
   
     constructor(private http: HttpClient) {}
 
-    getMaiElvegzendoFeladatok(){}
+    getMaiElvegzendoFeladatok(): Observable<TevekenysegDTO[]> {
+      return this.http.get<TevekenysegDTO[]>(`${this.url}/ma/elvegzendo`);
+    }
 
-    feladatElvegzese(){}
+      feladatElvegzese(
+          tevekenysegId: number,
+          dolgozoId: number,
+          datum: string
+      ): Observable<void> {
+          const params = new HttpParams()
+            .set('tevekenysegId', tevekenysegId)
+            .set('dolgozoId', dolgozoId)
+            .set('datum', datum);
+          return this.http.post<void>(`${this.url}/elvegzes`, null, { params });
+      }
 
-    getMaiElvegzettFeladatok(){}
+    getMaiElvegzettFeladatok(): Observable<TevekenysegNaploDTO[]> {
+      return this.http.get<TevekenysegNaploDTO[]>(`${this.url}/ma/elvegzettek`);
+    }
 
-    getOsszesNaplobejegyzes(){}
+    getOsszesNaplobejegyzes(): Observable<TevekenysegNaploDTO[]> {
+      return this.http.get<TevekenysegNaploDTO[]>(`${this.url}/naplo`);
+    }
 
-    ujTevekenyseg(){}
+    ujTevekenyseg(dto: TevekenysegDTO): Observable<void> {
+      return this.http.post<void>(this.url, dto);
+    }
 
-    getOsszesTevekenyseg(){}
+    getOsszesTevekenyseg(): Observable<TevekenysegDTO[]> {
+      return this.http.get<TevekenysegDTO[]>(this.url);
+    }
 
-    modositTevekenyseg(){}
+    modositTevekenyseg(id: number, dto: TevekenysegDTO): Observable<void> {
+      return this.http.put<void>(`${this.url}/${id}`, dto);
+    }
 
-    torolTevekenyseg(){}
+    torolTevekenyseg(id: number): Observable<void> {
+      return this.http.delete<void>(`${this.url}/${id}`);
+    }
 
 }

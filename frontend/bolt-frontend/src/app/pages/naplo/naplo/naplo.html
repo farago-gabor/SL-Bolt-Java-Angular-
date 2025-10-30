@@ -1,0 +1,26 @@
+<h1>Napló</h1>
+
+<mat-table [dataSource]="naplo" class="mat-elevation-z8">
+  <ng-container matColumnDef="megnevezes">
+    <mat-header-cell *matHeaderCellDef>Megnevezés</mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.megnevezes }}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="datum">
+    <mat-header-cell *matHeaderCellDef>Dátum</mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.datum }}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="dolgozo">
+    <mat-header-cell *matHeaderCellDef>Dolgozó</mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.dolgozo.nev }}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="elvegzett">
+    <mat-header-cell *matHeaderCellDef>Elvégzett</mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.elvegzett ? '✔' : '✖' }}</mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TevekenysegNaploDTO } from '../../../shared/models/tevekenyseg-naplo-dto.model';
+import { NaploDTO } from '../../../shared/models/naplo-dto.model';
 import { TevekenysegService } from '../../../shared/services/tevekenysegService/tevekenyseg-service';
 import { TevekenysegDTO } from '../../../shared/models/tevekenyseg-dto.model';
 import { MatTableModule } from '@angular/material/table';
@@ -12,15 +12,18 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './naplo.scss'
 })
 export class Naplo implements OnInit {
-  naplo: TevekenysegNaploDTO[] = [];
+  naplo: NaploDTO[] = [];
 
-  displayedColumns = ['megnevezes', 'datum', 'dolgozo', 'elvegzett'];
+  displayedColumns = ['id', 'tevekenysegMegnevezes', 'tevekenysegLeiras', 'datum', 'dolgozoNev'];
 
   constructor(private tevekenysegService: TevekenysegService) {}
 
   ngOnInit(): void {
     this.tevekenysegService.getOsszesNaplobejegyzes().subscribe(data => {
-      this.naplo = data;
+      this.naplo = data.map(d => ({
+        ...d,
+        datum: new Date(d.datum).toLocaleDateString() // optional formatting
+      }));
     });
   }
 

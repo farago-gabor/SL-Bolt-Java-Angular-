@@ -45,10 +45,10 @@ INSERT INTO tevekenyseg_idopontok (gyakorisag_id, nap, idopont) VALUES
 (4, 'szombat', '15:00:00');
 
 -- Tevékenység napló
-INSERT INTO tevekenyseg_naplo (tevekenyseg_id, dolgozo_id, datum, megcsinalta) VALUES
-(1, 2, '2025-07-01 08:15:00', TRUE),
-(2, 2, '2025-07-01 09:00:00', TRUE),
-(3, 2, '2025-07-01 10:00:00', FALSE);
+INSERT INTO tevekenyseg_naplo (tevekenyseg_id, idopont_id, dolgozo_id, datum, megcsinalta) VALUES
+(1, 1, 2, '2025-07-01 08:15:00', TRUE),
+(2, 8, 2, '2025-07-01 09:00:00', TRUE),
+(3, 11, 2, '2025-07-01 10:00:00', FALSE);
 
 -- Árucikkek
 INSERT INTO arucikkek (cikkcsoport, megnevezes, vonalkod) VALUES

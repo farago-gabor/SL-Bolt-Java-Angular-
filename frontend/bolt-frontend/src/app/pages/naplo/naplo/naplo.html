@@ -1,9 +1,19 @@
 <h1>Napló</h1>
 
 <mat-table [dataSource]="naplo" class="mat-elevation-z8">
-  <ng-container matColumnDef="megnevezes">
-    <mat-header-cell *matHeaderCellDef>Megnevezés</mat-header-cell>
-    <mat-cell *matCellDef="let t">{{ t.megnevezes }}</mat-cell>
+  <ng-container matColumnDef="id">
+    <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.id }}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="tevekenysegMegnevezes">
+    <mat-header-cell *matHeaderCellDef>Tevékenység megnevezése</mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.tevekenysegMegnevezes }}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="tevekenysegLeiras">
+    <mat-header-cell *matHeaderCellDef>Tevékenység leírása</mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.tevekenysegLeiras }}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="datum">
@@ -11,14 +21,9 @@
     <mat-cell *matCellDef="let t">{{ t.datum }}</mat-cell>
   </ng-container>
 
-  <ng-container matColumnDef="dolgozo">
-    <mat-header-cell *matHeaderCellDef>Dolgozó</mat-header-cell>
-    <mat-cell *matCellDef="let t">{{ t.dolgozo.nev }}</mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="elvegzett">
-    <mat-header-cell *matHeaderCellDef>Elvégzett</mat-header-cell>
-    <mat-cell *matCellDef="let t">{{ t.elvegzett ? '✔' : '✖' }}</mat-cell>
+  <ng-container matColumnDef="dolgozoNev">
+    <mat-header-cell *matHeaderCellDef>Elvégezte</mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.dolgozoNev }}</mat-cell>
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

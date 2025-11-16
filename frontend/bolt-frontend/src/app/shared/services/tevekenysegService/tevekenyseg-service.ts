@@ -3,7 +3,7 @@ import { environment } from '../../environment/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TevekenysegDTO } from '../../models/tevekenyseg-dto.model';
-import { TevekenysegNaploDTO } from '../../models/tevekenyseg-naplo-dto.model';
+import { NaploDTO } from '../../models/naplo-dto.model';
 
 @Injectable({
   providedIn: 'root'
@@ -30,12 +30,12 @@ export class TevekenysegService {
           return this.http.post<void>(`${this.url}/elvegzes`, null, { params });
       }
 
-    getMaiElvegzettFeladatok(): Observable<TevekenysegNaploDTO[]> {
-      return this.http.get<TevekenysegNaploDTO[]>(`${this.url}/ma/elvegzettek`);
+    getMaiElvegzettFeladatok(): Observable<NaploDTO[]> {
+      return this.http.get<NaploDTO[]>(`${this.url}/ma/elvegzettek`);
     }
 
-    getOsszesNaplobejegyzes(): Observable<TevekenysegNaploDTO[]> {
-      return this.http.get<TevekenysegNaploDTO[]>(`${this.url}/naplo`);
+    getOsszesNaplobejegyzes(): Observable<NaploDTO[]> {
+      return this.http.get<NaploDTO[]>(`${this.url}/naplo`);
     }
 
     ujTevekenyseg(dto: TevekenysegDTO): Observable<void> {

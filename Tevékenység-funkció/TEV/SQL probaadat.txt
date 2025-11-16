@@ -1,0 +1,97 @@
+Perfect 👍 you’re already 95% there — you just need to **update your `tevekenyseg_naplo` seed data** so it matches the *new schema*, which now includes `idopont_id`.
+
+Let’s go step-by-step:
+
+---
+
+## 🧱 1️⃣ Drop & recreate `tevekenyseg_naplo`
+
+Run this **after dropping your old `tevekenyseg_naplo` table**:
+
+```sql
+DROP TABLE IF EXISTS tevekenyseg_naplo;
+
+CREATE TABLE tevekenyseg_naplo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tevekenyseg_id INT NOT NULL,
+    idopont_id INT NULL,
+    dolgozo_id INT,
+    datum DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    megcsinalta BOOLEAN DEFAULT FALSE,
+
+    FOREIGN KEY (tevekenyseg_id) REFERENCES tevekenysegek(id) ON DELETE CASCADE,
+    FOREIGN KEY (idopont_id) REFERENCES tevekenyseg_idopontok(id) ON DELETE SET NULL,
+    FOREIGN KEY (dolgozo_id) REFERENCES dolgozok(id) ON DELETE SET NULL
+);
+```
+
+---
+
+## 🧩 2️⃣ Adjust your `INSERT` statements to include `idopont_id`
+
+Because now each naplóbejegyzés (log entry) can point to the **specific time slot**,
+you’ll add the corresponding `idopont_id`.
+
+From your inserts above, here’s how that would look:
+
+### ✅ Updated `tevekenyseg_naplo` inserts
+
+```sql
+-- Tevékenység napló (updated with idopont_id)
+INSERT INTO tevekenyseg_naplo (tevekenyseg_id, idopont_id, dolgozo_id, datum, megcsinalta) VALUES
+-- 1. Kávégép tisztítás (gyakorisag_id = 1, idopont_id e.g. 1–7)
+(1, 1, 2, '2025-07-01 08:15:00', TRUE),   -- hétfő 08:00
+
+-- 2. Felmosás (gyakorisag_id = 2, idopont_id e.g. 8–10)
+(2, 8, 2, '2025-07-01 09:00:00', TRUE),   -- hétfő 09:00
+
+-- 3. Polc átrendezés (gyakorisag_id = 3, idopont_id e.g. 11)
+(3, 11, 2, '2025-07-01 10:00:00', FALSE);
+```
+
+---
+
+## 🔍 3️⃣ Why this works
+
+You now have a **precise link** between:
+
+* the **activity** (`tevekenyseg_id`),
+* the **time slot** (`idopont_id`),
+* the **worker** (`dolgozo_id`),
+* and the **execution timestamp** (`datum`).
+
+This enables your backend logic to check:
+
+```java
+existsByTevekenysegAndIdopontAndDatum(...)
+```
+
+instead of blocking every same-day repetition.
+
+---
+
+## 🧠 Optional: if you want to log *two times per day* for the same activity
+
+You can just add multiple rows:
+
+```sql
+INSERT INTO tevekenyseg_naplo (tevekenyseg_id, idopont_id, dolgozo_id, datum, megcsinalta)
+VALUES
+(1, 1, 2, '2025-07-01 08:15:00', TRUE),
+(1, 2, 2, '2025-07-01 14:10:00', TRUE);
+```
+
+---
+
+## ✅ Summary
+
+| Task           | Action                                                                             |
+| -------------- | ---------------------------------------------------------------------------------- |
+| Drop old table | `DROP TABLE tevekenyseg_naplo;`                                                    |
+| Recreate table | Use the updated schema above                                                       |
+| Update insert  | Add `idopont_id` for each log                                                      |
+| Benefit        | You can now complete the same task multiple times per day for different time slots |
+
+---
+
+Would you like me to **generate the full working SQL script** (with your original data + the corrected `tevekenyseg_naplo` + proper foreign key IDs) so you can just copy-paste it into MySQL Workbench?

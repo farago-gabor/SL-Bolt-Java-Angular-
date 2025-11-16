@@ -22,7 +22,7 @@ CREATE TABLE tevekenysegek (
 CREATE TABLE tevekenyseg_gyakorisag (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tevekenyseg_id INT,               -- A tevékenység azonosítója
-    gyakorisag ENUM('naponta', 'heti', 'kethetente', 'havonta', 'specifikus'),  -- Gyakoriság típusa
+    gyakorisag ENUM('HETI', 'KETHETI', 'HAROMHETI', 'MINDIG', 'EGYSZERI'),  -- Gyakoriság típusa
     napok VARCHAR(255),               -- Ha heti gyakoriság, akkor tároljuk, hogy melyik napokon (pl. 'hétfő, kedd')
     ido_pontra_datum TIME,            -- Ha van pontos időpont, pl. '06:00', '09:00'
     FOREIGN KEY (tevekenyseg_id) REFERENCES tevekenysegek(id)
@@ -69,11 +69,13 @@ CREATE TABLE tevekenyseg_idopontok (
 CREATE TABLE tevekenyseg_naplo (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tevekenyseg_id INT NOT NULL,
+    idopont_id INT,
     dolgozo_id INT,
     datum DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     megcsinalta BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (tevekenyseg_id) REFERENCES tevekenysegek(id),
-    FOREIGN KEY (dolgozo_id) REFERENCES dolgozok(id)
+    FOREIGN KEY (dolgozo_id) REFERENCES dolgozok(id),
+    FOREIGN KEY (idopont_id) REFERENCES tevekenyseg_idopontok(id)
 );
 
 CREATE TABLE rendelesek (

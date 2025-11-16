@@ -13,6 +13,15 @@
     <mat-cell *matCellDef="let t">{{ t.leiras }}</mat-cell>
   </ng-container>
 
+  <ng-container matColumnDef="idopontok">
+    <mat-header-cell *matHeaderCellDef>Specifikus időpontok</mat-header-cell>
+    <mat-cell *matCellDef="let t">
+      @for (i of t.idopontok; track i) {
+        {{ i.idopont }}@if(!($last)){,}
+      }
+    </mat-cell>
+  </ng-container>
+
   <ng-container matColumnDef="muvelet">
     <mat-header-cell *matHeaderCellDef> </mat-header-cell>
     <mat-cell *matCellDef="let t">
@@ -20,8 +29,8 @@
     </mat-cell>
   </ng-container>
 
-  <mat-header-row *matHeaderRowDef="['megnevezes','leiras','muvelet']"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: ['megnevezes','leiras','muvelet']"></mat-row>
+  <mat-header-row *matHeaderRowDef="['megnevezes','leiras','idopontok', 'muvelet']"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: ['megnevezes','leiras', 'idopontok','muvelet']"></mat-row>
 </mat-table>
 
 <!-- Mai elvégzettek -->

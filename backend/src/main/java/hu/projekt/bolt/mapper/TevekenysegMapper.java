@@ -21,6 +21,9 @@ import java.util.Map;
 @Mapper(componentModel = "spring")
 public interface TevekenysegMapper {
 
+    @Mapping(source = "dolgozo.nev", target = "dolgozoNev")
+    @Mapping(source = "tevekenyseg.megnevezes", target = "tevekenysegMegnevezes")
+    @Mapping(source = "tevekenyseg.leiras", target = "tevekenysegLeiras")
     TevekenysegNaploDTO TevekenysegNaploToDTO(TevekenysegNaplo tevekenysegNaplo);
 
 

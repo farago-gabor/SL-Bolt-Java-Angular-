@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TevekenysegDTO } from '../../../shared/models/tevekenyseg-dto.model';
 import { Dolgozo } from '../../../shared/models/dolgozo.model';
-import { TevekenysegNaploDTO } from '../../../shared/models/tevekenyseg-naplo-dto.model';
+import { NaploDTO } from '../../../shared/models/naplo-dto.model';
 import { TevekenysegService } from '../../../shared/services/tevekenysegService/tevekenyseg-service';
 import { AuthService } from '../../../shared/services/auth.service';
 import { AsyncPipe, DatePipe } from '@angular/common';
@@ -30,7 +30,7 @@ import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/cor
 export class Tevekenysegek implements OnInit {
   
   maiElvegzendo: TevekenysegDTO[] = [];
-  maiElvegzettek: TevekenysegNaploDTO[] = [];
+  maiElvegzettek: NaploDTO[] = [];
   osszesTevekenyseg: TevekenysegDTO[] = [];
 
   ujTevekenysegMegjelenitese = false;

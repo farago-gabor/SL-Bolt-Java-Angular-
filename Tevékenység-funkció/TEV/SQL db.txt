@@ -1,0 +1,80 @@
+Perfect — let’s rebuild the **`tevekenyseg_naplo`** table completely, so it correctly supports **multiple daily executions of the same task** (e.g. same activity at 06:00 and 14:00).
+
+Here’s the full, **final SQL definition** 👇
+
+---
+
+### ✅ Final version of `tevekenyseg_naplo`
+
+```sql
+DROP TABLE IF EXISTS tevekenyseg_naplo;
+
+CREATE TABLE tevekenyseg_naplo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    
+    tevekenyseg_id INT NOT NULL,              -- which activity
+    idopont_id INT NULL,                      -- specific time slot (can be NULL for 'mindig' type)
+    dolgozo_id INT,                           -- who completed it
+    
+    datum DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- when it was logged
+    megcsinalta BOOLEAN DEFAULT FALSE,        -- whether completed or just recorded
+    
+    FOREIGN KEY (tevekenyseg_id) REFERENCES tevekenysegek(id) ON DELETE CASCADE,
+    FOREIGN KEY (idopont_id) REFERENCES tevekenyseg_idopontok(id) ON DELETE SET NULL,
+    FOREIGN KEY (dolgozo_id) REFERENCES dolgozok(id) ON DELETE SET NULL
+);
+```
+
+---
+
+### 🧠 Explanation
+
+| Column           | Type             | Meaning                                                                      |
+| ---------------- | ---------------- | ---------------------------------------------------------------------------- |
+| `id`             | `INT`            | Primary key                                                                  |
+| `tevekenyseg_id` | `INT`            | The base task (e.g. “Open the store”)                                        |
+| `idopont_id`     | `INT` (nullable) | Specific daily time (e.g. 06:00). Can be `NULL` for “always” or “once” tasks |
+| `dolgozo_id`     | `INT`            | The worker who performed it                                                  |
+| `datum`          | `DATETIME`       | The date/time when it was done                                               |
+| `megcsinalta`    | `BOOLEAN`        | Flag to indicate completion                                                  |
+| **FKs**          |                  | Keep referential integrity                                                   |
+
+---
+
+### 🧩 Why this works
+
+* A task can appear **multiple times per day** because `idopont_id` differentiates them.
+* For “mindig” (always) tasks, `idopont_id` can stay `NULL`.
+* Each execution by a worker will be stored in a **separate row**, so you can track who did which occurrence.
+
+Example data:
+
+| id | tevekenyseg_id | idopont_id | dolgozo_id | datum               | megcsinalta |
+| -- | -------------- | ---------- | ---------- | ------------------- | ----------- |
+| 1  | 5              | 12         | 2          | 2025-11-13 06:10:00 | 1           |
+| 2  | 5              | 13         | 2          | 2025-11-13 14:05:00 | 1           |
+
+---
+
+### 🔗 Related tables (for context)
+
+```sql
+CREATE TABLE tevekenyseg_idopontok (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gyakorisag_id INT NOT NULL,
+    nap VARCHAR(20) NOT NULL,         -- e.g. 'hetfo', 'kedd'
+    idopont TIME NOT NULL,            -- e.g. '06:00:00'
+    FOREIGN KEY (gyakorisag_id) REFERENCES tevekenyseg_gyakorisag(id) ON DELETE CASCADE
+);
+```
+
+---
+
+Once you recreate this table, you can safely modify your backend to:
+
+* Save a row per `(tevekenyseg_id, idopont_id, datum)` combination
+* Allow multiple entries per day for the same activity with different time slots
+
+---
+
+Would you like me to give you the **Spring Entity class (`TevekenysegNaplo.java`)** that matches this schema exactly (with proper `@ManyToOne` mappings)?

@@ -93,19 +93,19 @@ public class TevekenysegServiceImpl implements TevekenysegService{
         LocalDate kezdoDatum = gyak.getKezdoDatum();
 
         switch (tipus) {
-            case MINDIG:
+            case mindig:
                 return true;
 
-            case EGYSZERI:
+            case egyszeri:
                 return kezdoDatum != null && kezdoDatum.equals(today);
 
-            case HETI:
+            case heti:
                 // Ha heti ismétlődés, akkor a napokat az idopontokban kell keresni
                 return idopontok != null && idopontok.stream()
                         .anyMatch(idopont -> idopont.getNap().equalsIgnoreCase(todayName));
 
-            case KETHETI:
-            case HAROMHETI:
+            case ketheti:
+            case haromheti:
                 // Ha kethavi vagy haromhavi ismétlődés, akkor ellenőrizzük a napot, és a kezdődátumot is
                 if (idopontok == null || idopontok.stream().noneMatch(idopont -> idopont.getNap().equalsIgnoreCase(todayName))) {
                     return false;
@@ -113,7 +113,7 @@ public class TevekenysegServiceImpl implements TevekenysegService{
                 if (kezdoDatum == null) return false;
 
                 long weeksBetween = ChronoUnit.WEEKS.between(kezdoDatum, today);
-                int modulo = tipus == TevekenysegGyakorisag.Gyakorisag.KETHETI ? 2 : 3;
+                int modulo = tipus == TevekenysegGyakorisag.Gyakorisag.ketheti ? 2 : 3;
 
                 return weeksBetween % modulo == 0;
 

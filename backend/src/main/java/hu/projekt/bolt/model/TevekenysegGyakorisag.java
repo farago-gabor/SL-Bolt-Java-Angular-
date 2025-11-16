@@ -32,10 +32,10 @@ public class TevekenysegGyakorisag {
     private List<TevekenysegIdopont> idopontok;
 
     public enum Gyakorisag {
-        HETI,
-        KETHETI,
-        HAROMHETI,
-        MINDIG,
-        EGYSZERI
+        heti,
+        ketheti,
+        haromheti,
+        mindig,
+        egyszeri
     }
 }

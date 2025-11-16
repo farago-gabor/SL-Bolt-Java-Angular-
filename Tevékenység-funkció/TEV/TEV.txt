@@ -1,0 +1,152 @@
+Nagyon jó kérdés — és pontosan ez az a pont, ahol a **te jelenlegi adatmodell** majdnem tökéletes, csak **a naplózási logikán** kell finomítani.
+
+Összefoglalva:
+👉 Tehát **egy tevékenységhez több időpont** tartozhat (pl. 6:00, 14:00).
+👉 A dolgozó mindegyik időpontban **külön-külön** tudja elvégezni ugyanazt a tevékenységet.
+👉 Ez azt jelenti, hogy egy nap **többször is lehet naplóbejegyzés ugyanarra a tevékenységre**, de **más időpontokhoz kötve**.
+
+---
+
+## 🧱 Alapelvek
+
+Ezt **három rétegben** kell kezelni:
+
+### 1️⃣ Adatbázis szinten — egyértelműen azonosítható legyen az időpont
+
+Ehhez az alábbi módosítás szükséges (ha még nem tetted meg):
+
+```sql
+ALTER TABLE tevekenyseg_naplo
+ADD COLUMN idopont_id INT NULL,
+ADD CONSTRAINT fk_naplo_idopont FOREIGN KEY (idopont_id)
+    REFERENCES tevekenyseg_idopontok(id)
+    ON DELETE SET NULL;
+```
+
+Így egy naplóbejegyzés pontosan jelzi:
+➡️ melyik **tevékenység**
+➡️ melyik **időpont**
+➡️ melyik **dolgozó**
+➡️ melyik **napon** történt.
+
+---
+
+### 2️⃣ Backend logika — engedni kell, hogy *ugyanazon a napon többször is menthessünk*, ha más időpontról van szó
+
+Jelenleg nálad a kódban ez van:
+
+```java
+boolean alreadyLogged = naploRepository.existsByTevekenysegAndDatum(tevekenyseg, datum);
+if (alreadyLogged) return;
+```
+
+Ez **blokkolja** a többszöri napi végrehajtást.
+Módosítsd így:
+
+```java
+boolean alreadyLogged = naploRepository.existsByTevekenysegAndIdopontAndDatum(tevekenyseg, idopont, datum);
+if (alreadyLogged) return;
+```
+
+> Ezzel csak akkor tiltod a második mentést, ha *ugyanazt az időpontot* próbálja újra elvégezni aznap.
+
+---
+
+### 3️⃣ Repository kiegészítés
+
+A `TevekenysegNaploRepository`-ban legyen ez a metódus:
+
+```java
+boolean existsByTevekenysegAndIdopontAndDatum(Tevekenyseg tevekenyseg, TevekenysegIdopont idopont, LocalDate datum);
+```
+
+Ezen kívül a mai nap lekérdezéséhez (ami a „Mai elvégzettek” táblát tölti) jó, ha van:
+
+```java
+List<TevekenysegNaplo> findAllByDatum(LocalDate datum);
+```
+
+---
+
+### 4️⃣ Service módosítás (`feladatElvegzese`)
+
+A már látott verzió pontosan erre készült:
+
+```java
+@Override
+public void feladatElvegzese(int tevekenysegId, Integer idopontId, int dolgozoId, LocalDate datum) {
+    Tevekenyseg tevekenyseg = tevekenysegRepository.findById(tevekenysegId)
+            .orElseThrow(() -> new RuntimeException("Tevékenység nem található: " + tevekenysegId));
+
+    Dolgozo dolgozo = dolgozoRepository.findById(dolgozoId)
+            .orElseThrow(() -> new RuntimeException("Dolgozó nem található: " + dolgozoId));
+
+    TevekenysegIdopont idopont = null;
+    if (idopontId != null) {
+        idopont = idopontRepository.findById(idopontId)
+                .orElseThrow(() -> new RuntimeException("Időpont nem található: " + idopontId));
+    }
+
+    boolean alreadyLogged = naploRepository.existsByTevekenysegAndIdopontAndDatum(tevekenyseg, idopont, datum);
+    if (alreadyLogged) return;
+
+    TevekenysegNaplo naplo = new TevekenysegNaplo();
+    naplo.setTevekenyseg(tevekenyseg);
+    naplo.setIdopont(idopont);
+    naplo.setDolgozo(dolgozo);
+    naplo.setDatum(datum);
+    naplo.setMegcsinalta(true);
+
+    naploRepository.save(naplo);
+}
+```
+
+---
+
+### 5️⃣ Frontend oldalon — minden időpont külön „Elvégezve” gombot kap
+
+Ha egy tevékenységhez több időpont tartozik, a frontendben az `idopontok` tömb alapján generálhatsz több sort vagy több gombot:
+
+```html
+<mat-cell *matCellDef="let t">
+  <ng-container *ngFor="let i of t.idopontok">
+    <button mat-raised-button color="primary" (click)="elvegzes(t.id, i.id)">
+      {{ i.idopont }} – Elvégezve
+    </button>
+  </ng-container>
+</mat-cell>
+```
+
+És az Angular komponensben:
+
+```ts
+elvegzes(tevekenysegId: number, idopontId: number | null) {
+  this.http.post('/api/tevekenysegek/naplo', {
+    tevekenysegId,
+    idopontId,
+    dolgozoId: this.loggedInUserId
+  }).subscribe(() => this.frissit());
+}
+```
+
+---
+
+## 💡 Összefoglalva
+
+| Réteg          | Teendő                                         | Cél                                  |
+| -------------- | ---------------------------------------------- | ------------------------------------ |
+| **Adatbázis**  | `tevekenyseg_naplo` táblához `idopont_id` mező | Lehessen külön időpontot naplózni    |
+| **Repository** | `existsByTevekenysegAndIdopontAndDatum`        | Csak ugyanazt az időpontot blokkolja |
+| **Service**    | Ellenőrzés kiegészítése + `idopont` kezelése   | Több időpont → több bejegyzés        |
+| **Frontend**   | Minden időpontra külön gomb                    | Többszöri napi elvégzés              |
+
+---
+
+👉 Ezzel a megoldással a rendszer képes lesz:
+
+* ugyanazt a feladatot **többször is naplózni ugyanazon a napon**, ha több időpont tartozik hozzá,
+* viszont **nem** fogja kétszer engedni ugyanazt az időpontot kipipálni.
+
+---
+
+Szeretnéd, hogy megmutassam, **hogyan kell kinéznie a `TevekenysegIdopontRepository` és `TevekenysegNaploRepository`** kódnak pontosan (Spring Data JPA interfész szinten)?

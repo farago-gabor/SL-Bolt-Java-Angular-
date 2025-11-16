@@ -1,9 +1,10 @@
 import { TevekenysegDTO } from './tevekenyseg-dto.model';
 import { Dolgozo } from './dolgozo.model';
 
-export interface TevekenysegNaploDTO {
+export interface NaploDTO {
     id: number;
-    tevekenyseg: TevekenysegDTO;
-    dolgozoId: Dolgozo;
+    dolgozoNev: string;
+    tevekenysegMegnevezes: string;
+    tevekenysegLeiras: string;
     datum: string; // ISO string
 }

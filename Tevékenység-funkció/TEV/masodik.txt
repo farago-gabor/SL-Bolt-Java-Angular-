@@ -1,0 +1,143 @@
+Nagyon jó alap! A **backend** implementációdat logikailag rendben van, de **a jelenlegi kód nem tudja külön kezelni ugyanannak a tevékenységnek a több napi időpontját** (pl. reggel 6 és délután 14 óra), mert a naplózás (`feladatElvegzese`) csak a `tevekenyseg_id`-t naplózza, és nem az adott időpontot.
+
+Ezért hiába van több `TevekenysegIdopont` egy tevékenységhez, ha az egyiket elvégzi a dolgozó, a rendszer már „elvégezve”-nek látja az egészet — tehát nem tudja megkülönböztetni a reggeli és délutáni feladatot.
+
+---
+
+## ✅ Teendők, hogy jól működjön a többszöri napi végrehajtás
+
+### 1️⃣ Az adatbázist módosítani kell kicsit
+
+A `tevekenyseg_naplo` táblába vegyél fel egy `idopont_id` mezőt:
+
+```sql
+ALTER TABLE tevekenyseg_naplo
+ADD COLUMN idopont_id INT NULL,
+ADD CONSTRAINT fk_naplo_idopont FOREIGN KEY (idopont_id)
+    REFERENCES tevekenyseg_idopontok(id)
+    ON DELETE SET NULL;
+```
+
+---
+
+### 2️⃣ Az entitást (`TevekenysegNaplo.java`) bővítsd
+
+```java
+@ManyToOne
+@JoinColumn(name = "idopont_id")
+private TevekenysegIdopont idopont;
+```
+
+---
+
+### 3️⃣ A repository-ban pontosabb lekérdezést használj
+
+Most ez van:
+
+```java
+boolean existsByTevekenysegAndDatum(Tevekenyseg tevekenyseg, LocalDate datum);
+```
+
+Ezt egészítsd ki:
+
+```java
+boolean existsByTevekenysegAndIdopontAndDatum(Tevekenyseg tevekenyseg, TevekenysegIdopont idopont, LocalDate datum);
+```
+
+---
+
+### 4️⃣ A service metódust (`feladatElvegzese`) módosítsd
+
+Most:
+
+```java
+public void feladatElvegzese(int tevekenysegId, int dolgozoId, LocalDate datum)
+```
+
+Legyen:
+
+```java
+public void feladatElvegzese(int tevekenysegId, Integer idopontId, int dolgozoId, LocalDate datum)
+```
+
+És a tartalma:
+
+```java
+@Override
+public void feladatElvegzese(int tevekenysegId, Integer idopontId, int dolgozoId, LocalDate datum) {
+    Tevekenyseg tevekenyseg = tevekenysegRepository.findById(tevekenysegId)
+            .orElseThrow(() -> new RuntimeException("Tevékenység nem található: " + tevekenysegId));
+
+    Dolgozo dolgozo = dolgozoRepository.findById(dolgozoId)
+            .orElseThrow(() -> new RuntimeException("Dolgozó nem található: " + dolgozoId));
+
+    TevekenysegIdopont idopont = null;
+    if (idopontId != null) {
+        idopont = gyakorisagRepository.findIdopontById(idopontId)
+                .orElseThrow(() -> new RuntimeException("Időpont nem található: " + idopontId));
+    }
+
+    boolean alreadyLogged = naploRepository.existsByTevekenysegAndIdopontAndDatum(tevekenyseg, idopont, datum);
+    if (alreadyLogged) return;
+
+    TevekenysegNaplo naplo = new TevekenysegNaplo();
+    naplo.setTevekenyseg(tevekenyseg);
+    naplo.setDolgozo(dolgozo);
+    naplo.setDatum(datum);
+    naplo.setMegcsinalta(true);
+    naplo.setIdopont(idopont);
+
+    naploRepository.save(naplo);
+}
+```
+
+---
+
+### 5️⃣ A frontend hívásnál (Angular) az `elvegzes(t)` gombbal küldd el az `idopont_id`-t is:
+
+```ts
+elvegzes(t) {
+  this.http.post('/api/tevekenysegek/naplo', {
+    tevekenysegId: t.id,
+    idopontId: t.idopont?.id ?? null
+  }).subscribe(() => this.frissit());
+}
+```
+
+---
+
+### 6️⃣ A backend controller endpoint (Spring REST) így nézzen ki:
+
+```java
+@PostMapping("/naplo")
+public ResponseEntity<Void> elvegzes(@RequestBody FeladatElvegzesDTO dto) {
+    tevekenysegService.feladatElvegzese(dto.getTevekenysegId(), dto.getIdopontId(), dto.getDolgozoId(), LocalDate.now());
+    return ResponseEntity.ok().build();
+}
+```
+
+DTO:
+
+```java
+@Data
+public class FeladatElvegzesDTO {
+    private int tevekenysegId;
+    private Integer idopontId; // lehet null, ha "mindig" típus
+    private int dolgozoId;
+}
+```
+
+---
+
+## 💡 Eredmény
+
+| Tevékenység | Időpont | Dátum      | Dolgozó    | Megcsinálta |
+| ----------- | ------- | ---------- | ---------- | ----------- |
+| Bolt nyitás | 06:00   | 2025-11-13 | Kiss Péter | ✅           |
+| Bolt nyitás | 14:00   | 2025-11-13 | Kiss Péter | ✅           |
+
+A rendszer most már **ugyanazt a tevékenységet többször is engedi naplózni egy napon belül**, de mindig külön `idopont_id` szerint.
+
+---
+
+Szeretnéd, hogy mutassak hozzá egy **Spring Data JPA repository példát** is, ami tartalmazza az `existsByTevekenysegAndIdopontAndDatum` metódust és a `findAllByDatum()` lekérdezést az új szerkezethez?

@@ -1,0 +1,110 @@
+Nagyon jó az adatmodell és a frontend koncepció — **közel kész**, de egy apró **kiegészítés** hiányzik ahhoz, hogy valóban helyesen kezeld azt az esetet, amikor **ugyanazt a tevékenységet többször is el kell végezni ugyanazon a napon (pl. 6:00 és 14:00)**.
+
+---
+
+## 🎯 A probléma lényege
+
+A jelenlegi struktúrában a `tevekenyseg_naplo` tábla **csak a tevékenyseg_id**-t naplózza.
+Viszont, ha egy tevékenységhez több időpont is tartozik (`tevekenyseg_idopontok` tábla), akkor nem tudod **megkülönböztetni**, hogy a felhasználó melyik időpontot pipálta ki (pl. reggeli vagy délutáni).
+
+---
+
+## ✅ Javasolt módosítás
+
+### 1️⃣ Bővítsd a `tevekenyseg_naplo` táblát az `idopont_id` oszloppal
+
+Így egyértelműen naplózható, **melyik időpontban** történt a végrehajtás.
+
+```sql
+ALTER TABLE tevekenyseg_naplo
+ADD COLUMN idopont_id INT NULL,
+ADD FOREIGN KEY (idopont_id) REFERENCES tevekenyseg_idopontok(id) ON DELETE SET NULL;
+```
+
+> 🧠 Ez az oszlop akkor NULL, ha „mindig” típusú tevékenységről van szó (vagyis nincs konkrét időpontja).
+
+---
+
+### 2️⃣ Így a naplózás logikája:
+
+| tevekenyseg_id | idopont_id | dolgozo_id | datum               | megcsinalta |
+| -------------- | ---------- | ---------- | ------------------- | ----------- |
+| 3              | 10         | 2          | 2025-11-13 06:10:00 | 1           |
+| 3              | 11         | 2          | 2025-11-13 14:05:00 | 1           |
+
+→ Egy nap **kétszer is megjelenhet ugyanaz a tevékenység**, külön sorban, az adott `idopont_id` alapján.
+Így a frontend könnyen kiszűrheti, hogy mely időpont(ok) maradt(ak) el.
+
+---
+
+## 🖥️ Backend lekérdezések
+
+### Mai elvégzendő tevékenységek lekérése
+
+```sql
+SELECT 
+    t.id AS tevekenyseg_id,
+    t.megnevezes,
+    t.leiras,
+    ig.idopont,
+    ig.nap,
+    tg.gyakorisag
+FROM tevekenysegek t
+JOIN tevekenyseg_gyakorisag tg ON tg.tevekenyseg_id = t.id
+LEFT JOIN tevekenyseg_idopontok ig ON ig.gyakorisag_id = tg.id
+WHERE
+    (ig.nap = DAYNAME(CURDATE()) OR tg.gyakorisag = 'mindig')
+```
+
+### Mai elvégzettek lekérése
+
+```sql
+SELECT 
+    t.megnevezes,
+    d.nev AS dolgozoNev,
+    n.datum,
+    ig.idopont
+FROM tevekenyseg_naplo n
+JOIN tevekenysegek t ON n.tevekenyseg_id = t.id
+LEFT JOIN dolgozok d ON n.dolgozo_id = d.id
+LEFT JOIN tevekenyseg_idopontok ig ON n.idopont_id = ig.id
+WHERE DATE(n.datum) = CURDATE() AND n.megcsinalta = TRUE;
+```
+
+---
+
+## 🧩 Frontend oldali hatás
+
+A `maiElvegzendo` tömbbe most **minden időpont külön sor** lesz, tehát pl.:
+
+```ts
+[
+  { id: 3, megnevezes: 'Bolt nyitás', idopont: '06:00' },
+  { id: 3, megnevezes: 'Bolt nyitás', idopont: '14:00' },
+]
+```
+
+Amikor a dolgozó az „Elvégezve” gombra kattint, a backend felé elküldöd:
+
+```json
+{
+  "tevekenyseg_id": 3,
+  "idopont_id": 10
+}
+```
+
+És ezt rögzíted a `tevekenyseg_naplo`-ban.
+
+---
+
+## 🔒 Összegzés
+
+| Funkció                             | Megvalósítható a jelenlegi sémával? | Javasolt módosítás                                   |
+| ----------------------------------- | ----------------------------------- | ---------------------------------------------------- |
+| Egy tevékenység több napi időpontja | ✅                                   | Már kezelted `tevekenyseg_idopontok` táblával        |
+| Naplózás külön időpontokra          | ⚠️                                  | `idopont_id` mező hozzáadása `tevekenyseg_naplo`-hoz |
+| „Mindig” típusú tevékenységek       | ✅                                   | `idopont_id` NULL marad                              |
+
+---
+
+Szeretnéd, hogy mutassak egy konkrét **Node.js (Express)** backend endpoint példát is arra, hogyan naplózza a front a „Elvégezve” gombot (`POST /api/tevekenysegek/naplo`)?

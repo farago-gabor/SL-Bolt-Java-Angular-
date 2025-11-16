@@ -11,7 +11,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class TevekenysegNaploDTO {
     private int id;
-    private TevekenysegDTO tevekenyseg;
-    private DolgozoDTO dolgozoId;
+    private String dolgozoNev;
+    private String tevekenysegMegnevezes;
+    private String tevekenysegLeiras;
     private LocalDate datum;
 }

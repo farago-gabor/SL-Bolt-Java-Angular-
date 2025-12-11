@@ -138,6 +138,50 @@ export class Rendelesek implements OnInit {
     });
   }
 
+  onStatusChange(status: 'beerkezet' | 'felreteve' | 'szoltam' | 'elvitte', checked: boolean) {
+    if (!this.szerkesztettRendeles) return;
+
+    const r = this.szerkesztettRendeles;
+
+    // előrehaladás: csak ha az előző lépés pipálva van
+    if (checked) {
+      switch(status) {
+        case 'beerkezet':
+          r.beerkezet = true;
+          break;
+        case 'felreteve':
+          if (r.beerkezet) r.felreteve = true;
+          break;
+        case 'szoltam':
+          if (r.felreteve) r.szoltam = true;
+          break;
+        case 'elvitte':
+          if (r.szoltam) r.elvitte = true;
+          break;
+      }
+    } 
+    // visszafelé: csak a későbbi státuszok engedik a "ki" pipát
+    else {
+      switch(status) {
+        case 'beerkezet':
+          // csak akkor vehetjük ki, ha nincs semmi utána pipálva
+          if (!r.felreteve && !r.szoltam && !r.elvitte) r.beerkezet = false;
+          break;
+        case 'felreteve':
+          if (!r.szoltam && !r.elvitte) r.felreteve = false;
+          break;
+        case 'szoltam':
+          if (!r.elvitte) r.szoltam = false;
+          break;
+        case 'elvitte':
+          r.elvitte = false;
+          break;
+      }
+    }
+  }
+
+
+
   // autocompletehez:
   addTetel() {
     const index = this.ujRendeles.tetelek.length;

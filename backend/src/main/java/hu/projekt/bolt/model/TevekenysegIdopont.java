@@ -3,6 +3,8 @@ package hu.projekt.bolt.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalTime;
+
 @Entity
 @Table(name = "tevekenyseg_idopontok")
 @Data
@@ -20,5 +22,5 @@ public class TevekenysegIdopont {
 
     private String nap;        // például: "hetfo", "kedd", stb.
 
-    private String idopont;    // például: "07:00", "14:00"
+    private LocalTime idopont;    // például: "07:00", "14:00"
 }

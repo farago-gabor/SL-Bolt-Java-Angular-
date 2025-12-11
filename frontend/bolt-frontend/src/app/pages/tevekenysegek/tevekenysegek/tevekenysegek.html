@@ -14,7 +14,7 @@
   </ng-container>
 
   <ng-container matColumnDef="idopontok">
-    <mat-header-cell *matHeaderCellDef>Specifikus időpontok</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>Elvégzendő időpont</mat-header-cell>
     <mat-cell *matCellDef="let t">
       @for (i of t.idopontok; track i) {
         {{ i.idopont }}@if(!($last)){,}
@@ -24,9 +24,17 @@
 
   <ng-container matColumnDef="muvelet">
     <mat-header-cell *matHeaderCellDef> </mat-header-cell>
-    <mat-cell *matCellDef="let t">
-      <button mat-raised-button color="primary" (click)="elvegzes(t)">Elvégezve</button>
-    </mat-cell>
+      <mat-cell *matCellDef="let t">
+        @for (i of t.idopontok; track i.id) {
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="elvegzes(t, i.id)"
+            style="margin: 4px;">
+            {{ i.idopont }} - Elvégzés
+          </button>
+        }
+      </mat-cell>
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="['megnevezes','leiras','idopontok', 'muvelet']"></mat-header-row>
@@ -38,7 +46,7 @@
 <mat-table [dataSource]="maiElvegzettek">
   <ng-container matColumnDef="megnevezes">
     <mat-header-cell *matHeaderCellDef> Feladat </mat-header-cell>
-    <mat-cell *matCellDef="let n">{{ n.megnevezes }}</mat-cell>
+    <mat-cell *matCellDef="let n">{{ n.tevekenysegMegnevezes }}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="dolgozo">
@@ -51,67 +59,190 @@
     <mat-cell *matCellDef="let n">{{ n.datum }}</mat-cell>
   </ng-container>
 
-  <mat-header-row *matHeaderRowDef="['megnevezes','dolgozo','datum']"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: ['megnevezes','dolgozo','datum']"></mat-row>
+  <ng-container matColumnDef="idopont">
+    <mat-header-cell *matHeaderCellDef> Elvégzett időpontra </mat-header-cell>
+    <mat-cell *matCellDef="let n">{{ n.idopont }}</mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="['megnevezes','dolgozo','datum', 'idopont']"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: ['megnevezes','dolgozo','datum', 'idopont']"></mat-row>
 </mat-table>
 
 <!-- Admin panel -->
 @if (isAdmin) {
-  <mat-accordion>
-    <mat-expansion-panel [(expanded)]="ujTevekenysegMegjelenitese">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Új tevékenység hozzáadása</mat-panel-title>
-      </mat-expansion-panel-header>
+  <div class="admin-panel">
+    <mat-accordion>
+      <mat-expansion-panel [(expanded)]="ujTevekenysegMegjelenitese">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Új tevékenység hozzáadása</mat-panel-title>
+        </mat-expansion-panel-header>
 
-      <form (ngSubmit)="submitUjTevekenyseg()">
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Megnevezés</mat-label>
-          <input matInput [(ngModel)]="ujTevekenyseg.megnevezes" name="megnevezes" required />
-        </mat-form-field>
+        <form (ngSubmit)="submitUjTevekenyseg()">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Megnevezés</mat-label>
+            <input matInput [(ngModel)]="ujTevekenyseg.megnevezes" name="megnevezes" required />
+          </mat-form-field>
 
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Leírás</mat-label>
-          <input matInput [(ngModel)]="ujTevekenyseg.leiras" name="leiras" />
-        </mat-form-field>
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Leírás</mat-label>
+            <input matInput [(ngModel)]="ujTevekenyseg.leiras" name="leiras" />
+          </mat-form-field>
 
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Dátum</mat-label>
-          <input matInput [matDatepicker]="picker" [(ngModel)]="ujTevekenyseg.kezdoDatum" name="datum" />
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Dátum</mat-label>
+            <input matInput [matDatepicker]="ujPicker" [(ngModel)]="ujTevekenyseg.kezdoDatum" name="datum" />
+            <mat-datepicker-toggle matSuffix [for]="ujPicker"></mat-datepicker-toggle>
+            <mat-datepicker #ujPicker></mat-datepicker>
+          </mat-form-field>
 
-        <button mat-raised-button color="primary" type="submit">Mentés</button>
-      </form>
-    </mat-expansion-panel>
-  </mat-accordion>
+          <!-- Gyakoriság select -->
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Gyakoriság</mat-label>
+            <mat-select [(ngModel)]="ujTevekenyseg.gyakorisag" name="gyakorisag" required>
+              <mat-option value="mindig">Mindig</mat-option>
+              <mat-option value="egyszeri">Egyszeri</mat-option>
+              <mat-option value="heti">Heti</mat-option>
+              <mat-option value="ketheti">Kétheti</mat-option>
+              <mat-option value="haromheti">Háromheti</mat-option>
+            </mat-select>
+          </mat-form-field>
 
-  <h2>Összes tevékenység (Admin)</h2>
-  <mat-table [dataSource]="osszesTevekenyseg">
-    <ng-container matColumnDef="megnevezes">
-      <mat-header-cell *matHeaderCellDef> Feladat </mat-header-cell>
-      <mat-cell *matCellDef="let t">{{ t.megnevezes }}</mat-cell>
-    </ng-container>
+          <!-- Időpontok kezelése -->
+          @for (idopont of ujTevekenyseg.idopontok; track $index) {
+            <div class="idopont-row">
+              <mat-form-field appearance="fill">
+                <mat-label>Nap</mat-label>
+                <mat-select [(ngModel)]="idopont.nap" name="nap-{{$index}}" required>
+                  <mat-option value="hetfo">Hétfő</mat-option>
+                  <mat-option value="kedd">Kedd</mat-option>
+                  <mat-option value="szerda">Szerda</mat-option>
+                  <mat-option value="csutortok">Csütörtök</mat-option>
+                  <mat-option value="pentek">Péntek</mat-option>
+                  <mat-option value="szombat">Szombat</mat-option>
+                  <mat-option value="vasarnap">Vasárnap</mat-option>
+                </mat-select>
+              </mat-form-field>
 
-    <ng-container matColumnDef="leiras">
-      <mat-header-cell *matHeaderCellDef> Leírás </mat-header-cell>
-      <mat-cell *matCellDef="let t">{{ t.leiras }}</mat-cell>
-    </ng-container>
+              <mat-form-field appearance="fill">
+                <mat-label>Időpont</mat-label>
+                <input matInput type="time" [(ngModel)]="idopont.idopont" name="idopont-{{$index}}" placeholder="pl. 08:00" required />
+              </mat-form-field>
 
-    <ng-container matColumnDef="datum">
-      <mat-header-cell *matHeaderCellDef> Dátum </mat-header-cell>
-      <mat-cell *matCellDef="let t">{{ t.datum }}</mat-cell>
-    </ng-container>
+              <button mat-button color="warn" type="button" (click)="removeIdopont($index)">
+                Törlés
+              </button>
+            </div>
+          }
 
-    <ng-container matColumnDef="muveletek">
-      <mat-header-cell *matHeaderCellDef> Műveletek </mat-header-cell>
-      <mat-cell *matCellDef="let t">
-        <button mat-button color="accent" (click)="modositInit(t)">Módosítás</button>
-        <button mat-button color="warn" (click)="torol(t.id)">Törlés</button>
-      </mat-cell>
-    </ng-container>
+          <button mat-button type="button" color="primary" (click)="addIdopont()">+ Időpont</button>
 
-    <mat-header-row *matHeaderRowDef="['megnevezes','leiras','datum','muveletek']"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: ['megnevezes','leiras','datum','muveletek']"></mat-row>
-  </mat-table>
+          <button mat-raised-button color="primary" type="submit">Mentés</button>
+        </form>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <h2>Összes tevékenység (Admin)</h2>
+    <mat-table [dataSource]="osszesTevekenyseg">
+      <ng-container matColumnDef="megnevezes">
+        <mat-header-cell *matHeaderCellDef> Feladat </mat-header-cell>
+        <mat-cell *matCellDef="let t">
+          @if (szerkesztett?.id === t.id && szerkesztett) {
+            <input matInput [(ngModel)]="szerkesztett.megnevezes" name="megnevezes-{{t.id}}" />
+          } @else {
+            {{ t.megnevezes }}
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="leiras">
+        <mat-header-cell *matHeaderCellDef> Leírás </mat-header-cell>
+        <mat-cell *matCellDef="let t">
+          @if (szerkesztett?.id === t.id && szerkesztett) {
+            <input matInput [(ngModel)]="szerkesztett.leiras" name="leiras-{{t.id}}" />
+          } @else {
+            {{ t.leiras }}
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="datum">
+        <mat-header-cell *matHeaderCellDef> Kezdési dátum </mat-header-cell>
+        <mat-cell *matCellDef="let t">
+          @if (szerkesztett?.id === t.id && szerkesztett) {
+            <input matInput [(ngModel)]="szerkesztett.kezdoDatum" name="datum-{{t.id}}" [matDatepicker]="pickerRef" />
+            <mat-datepicker-toggle matSuffix [for]="pickerRef"></mat-datepicker-toggle>
+            <mat-datepicker #pickerRef></mat-datepicker>
+          } @else {
+            {{ t.kezdoDatum | date:'yyyy. MM. dd.' }}
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="gyakorisag">
+        <mat-header-cell *matHeaderCellDef> Gyakoriság </mat-header-cell>
+        <mat-cell *matCellDef="let t">
+          @if (szerkesztett?.id === t.id && szerkesztett) {
+            <mat-select [(ngModel)]="szerkesztett.gyakorisag" name="gyakorisag-{{t.id}}">
+              <mat-option value="mindig">Mindig</mat-option>
+              <mat-option value="egyszeri">Egyszeri</mat-option>
+              <mat-option value="heti">Heti</mat-option>
+              <mat-option value="ketheti">Kétheti</mat-option>
+              <mat-option value="haromheti">Háromheti</mat-option>
+            </mat-select>
+          } @else {
+            {{ t.gyakorisag }}
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="idopontok">
+        <mat-header-cell *matHeaderCellDef> Nap / Időpont </mat-header-cell>
+        <mat-cell *matCellDef="let t">
+          @if (szerkesztett?.id === t.id && szerkesztett) {
+            @for (idopont of szerkesztett.idopontok; track $index) {
+              <div class="idopont-row">
+                <mat-form-field appearance="fill">
+                  <mat-label>Nap</mat-label>
+                  <mat-select [(ngModel)]="idopont.nap" name="nap-{{t.id}}-{{$index}}">
+                    <mat-option value="hetfo">Hétfő</mat-option>
+                    <mat-option value="kedd">Kedd</mat-option>
+                    <mat-option value="szerda">Szerda</mat-option>
+                    <mat-option value="csutortok">Csütörtök</mat-option>
+                    <mat-option value="pentek">Péntek</mat-option>
+                    <mat-option value="szombat">Szombat</mat-option>
+                    <mat-option value="vasarnap">Vasárnap</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Időpont</mat-label>
+                  <input matInput type="time" [(ngModel)]="idopont.idopont" name="idopont-{{t.id}}-{{$index}}" />
+                </mat-form-field>
+              </div>
+            }
+          } @else {
+              @for (idopont of t.idopontok; track $index) {
+                {{ idopont.nap }} - {{ idopont.idopont }}@if (!$last) {, }
+              }
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="muveletek">
+        <mat-header-cell *matHeaderCellDef> Műveletek </mat-header-cell>
+        <mat-cell *matCellDef="let t">
+          @if (szerkesztett?.id === t.id) {
+            <button mat-button color="primary" (click)="mentesModositas()">Mentés</button>
+            <button mat-button (click)="szerkesztett=null">Mégse</button>
+          } @else {
+            <!--<button mat-button color="accent" (click)="modositInit(t)">Módosítás</button>-->
+            <button mat-button color="warn" (click)="torol(t.id)">Törlés</button>
+          }
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="['megnevezes','leiras','datum','gyakorisag','idopontok','muveletek']"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: ['megnevezes','leiras','datum','gyakorisag','idopontok','muveletek']"></mat-row>
+    </mat-table>
+  </div>
 }

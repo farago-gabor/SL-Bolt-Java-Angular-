@@ -14,7 +14,7 @@ import { AsyncPipe } from '@angular/common';
 export class Naplo implements OnInit {
   naplo: NaploDTO[] = [];
 
-  displayedColumns = ['id', 'tevekenysegMegnevezes', 'tevekenysegLeiras', 'datum', 'dolgozoNev'];
+  displayedColumns = ['id', 'tevekenysegMegnevezes', 'tevekenysegLeiras', 'datum', 'idopont', 'dolgozoNev'];
 
   constructor(private tevekenysegService: TevekenysegService) {}
 

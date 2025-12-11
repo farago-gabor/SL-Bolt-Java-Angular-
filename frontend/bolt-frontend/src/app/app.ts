@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from './shared/services/auth.service';
+import { Menu } from "./shared/menu/menu";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, Menu],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

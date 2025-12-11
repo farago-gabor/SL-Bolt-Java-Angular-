@@ -1,0 +1,66 @@
+/* Alap navigáció */
+nav {
+    background-color: #1976d2; /* Material Blue 600 */
+    padding: 0.5rem 1rem;
+    position: relative;
+}
+
+/* Lista stílus */
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Linkek stílusa */
+nav a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Hover effekt */
+nav a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Aktív link */
+nav a.active-link {
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Kijelentkezés gomb */
+nav button {
+    background-color: #e53935; /* Material Red 600 */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+nav button:hover {
+    background-color: #d32f2f; /* Darker red on hover */
+}
+
+/* Mobil nézethez (opcionális) */
+@media (max-width: 600px) {
+    nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    nav a, nav button {
+        width: 100%;
+        text-align: center;
+    }
+}

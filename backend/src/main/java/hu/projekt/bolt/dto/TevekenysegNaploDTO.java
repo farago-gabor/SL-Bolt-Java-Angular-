@@ -15,4 +15,6 @@ public class TevekenysegNaploDTO {
     private String tevekenysegMegnevezes;
     private String tevekenysegLeiras;
     private LocalDate datum;
+    private String nap;
+    private String idopont;
 }

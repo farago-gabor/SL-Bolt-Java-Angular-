@@ -24,9 +24,12 @@ public interface TevekenysegMapper {
     @Mapping(source = "dolgozo.nev", target = "dolgozoNev")
     @Mapping(source = "tevekenyseg.megnevezes", target = "tevekenysegMegnevezes")
     @Mapping(source = "tevekenyseg.leiras", target = "tevekenysegLeiras")
+    @Mapping(source = "idopont.nap", target = "nap")
+    @Mapping(source = "idopont.idopont", target = "idopont")
     TevekenysegNaploDTO TevekenysegNaploToDTO(TevekenysegNaplo tevekenysegNaplo);
 
 
+    @Mapping(source = "tevekenyseg.id", target = "id")
     @Mapping(source = "tevekenyseg.megnevezes", target = "megnevezes")
     @Mapping(source = "tevekenyseg.leiras", target = "leiras")
     @Mapping(source = "tevekenysegGyakorisag.gyakorisag", target = "gyakorisag")
@@ -40,7 +43,7 @@ public interface TevekenysegMapper {
     @Named("idopontToDto")
     default NapIdopontDTO idopontToDto(TevekenysegIdopont idopont) {
         if (idopont == null) return null;
-        return new NapIdopontDTO(idopont.getNap(), idopont.getIdopont());
+        return new NapIdopontDTO(idopont.getId(), idopont.getNap(), idopont.getIdopont());
     }
 
     // Ha később DTO-ból vissza akarsz mappelni entitásba:

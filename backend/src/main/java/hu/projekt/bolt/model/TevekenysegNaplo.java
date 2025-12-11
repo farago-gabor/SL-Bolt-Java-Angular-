@@ -22,6 +22,10 @@ public class TevekenysegNaplo {
     private Tevekenyseg tevekenyseg;
 
     @ManyToOne
+    @JoinColumn(name = "idopont_id") // nullable, mert bizonyos tevékenységeknek lehet nincs konkrét időpontja
+    private TevekenysegIdopont idopont;
+
+    @ManyToOne
     @JoinColumn(name = "dolgozo_id")
     private Dolgozo dolgozo;
     private LocalDate datum;

@@ -21,6 +21,11 @@
     <mat-cell *matCellDef="let t">{{ t.datum }}</mat-cell>
   </ng-container>
 
+  <ng-container matColumnDef="idopont">
+    <mat-header-cell *matHeaderCellDef>Időpont</mat-header-cell>
+    <mat-cell *matCellDef="let t">{{ t.idopont }}</mat-cell>
+  </ng-container>
+
   <ng-container matColumnDef="dolgozoNev">
     <mat-header-cell *matHeaderCellDef>Elvégezte</mat-header-cell>
     <mat-cell *matCellDef="let t">{{ t.dolgozoNev }}</mat-cell>

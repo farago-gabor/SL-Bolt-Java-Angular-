@@ -1,9 +1,89 @@
-.list-card {
-  padding: 32px;
-  margin: 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+.main-container {
+    font-family: 'Roboto', sans-serif;
+    margin: 15px;
+    background-color: #f9f9f9;
 }
 
-.sub-header {
-    margin-bottom: 24px;
+h2 {
+    text-align: center;
+    color: #1976d2; /* Material kék */
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+/* Mat-card lista */
+.list-card {
+    padding: 1rem;
+    margin-top: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Táblázat stílus */
+table.mat-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.mat-header-cell, .mat-cell {
+    padding: 0.5rem 1rem;
+}
+
+.mat-header-cell {
+    font-weight: 600;
+    background-color: #f5f5f5;
+}
+
+.mat-row:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Accordion panel stílus */
+mat-expansion-panel {
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Formok teljes szélességű mezői */
+.full-width {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+/* Gombok stílusa */
+button[mat-button], button[mat-raised-button] {
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+button[mat-raised-button] {
+    min-width: 120px;
+}
+
+/* Szerkesztő panel belső tér */
+mat-expansion-panel form > div {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+/* Mobil nézet */
+@media (max-width: 768px) {
+    mat-expansion-panel form > div {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    table.mat-table, .mat-header-cell, .mat-cell {
+        font-size: 0.9rem;
+    }
 }

@@ -4,11 +4,12 @@ import hu.projekt.bolt.dto.TevekenysegDTO;
 import hu.projekt.bolt.dto.TevekenysegNaploDTO;
 import hu.projekt.bolt.mapper.TevekenysegMapperImpl;
 import hu.projekt.bolt.model.*;
-import hu.projekt.bolt.repository.DolgozoRepository;
-import hu.projekt.bolt.repository.TevekenysegGyakorisagRepository;
-import hu.projekt.bolt.repository.TevekenysegNaploRepository;
-import hu.projekt.bolt.repository.TevekenysegRepository;
+import hu.projekt.bolt.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -20,12 +21,14 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TevekenysegServiceImpl implements TevekenysegService{
 
     private final TevekenysegRepository tevekenysegRepository;
     private final TevekenysegGyakorisagRepository gyakorisagRepository;
     private final TevekenysegNaploRepository naploRepository;
     private final DolgozoRepository dolgozoRepository;
+    private final TevekenysegIdopontRepository idopontRepository;
     private final TevekenysegMapperImpl mapper;
 
 
@@ -33,22 +36,45 @@ public class TevekenysegServiceImpl implements TevekenysegService{
     @Override
     public List<TevekenysegDTO> maiElvegzendoFeladatok() {
         LocalDate today = LocalDate.now();
-        DayOfWeek todayDay = today.getDayOfWeek();
-        String todayName = todayDay.name().toLowerCase(); // pl. hétfő
+        String todayName = switch (today.getDayOfWeek()) {
+            case MONDAY    -> "hetfo";
+            case TUESDAY   -> "kedd";
+            case WEDNESDAY -> "szerda";
+            case THURSDAY  -> "csutortok";
+            case FRIDAY    -> "pentek";
+            case SATURDAY  -> "szombat";
+            case SUNDAY    -> "vasarnap";
+        };
 
         List<TevekenysegDTO> result = new ArrayList<>();
 
-        List<TevekenysegGyakorisag> gyakorisagok = gyakorisagRepository.findAll();
-
-        for (TevekenysegGyakorisag gyak : gyakorisagok) {
+        for (TevekenysegGyakorisag gyak : gyakorisagRepository.findAll()) {
             Tevekenyseg tevekenyseg = gyak.getTevekenyseg();
 
-            if (!isAktualisMa(gyak, today, todayName)) continue;
+            if (!isAktualisMa(gyak, today, todayName)) {
+                continue;
+            }
 
-            // Ellenőrzés: már szerepel-e a naplóban ma?
-            boolean alreadyExists = naploRepository.existsByTevekenysegAndDatum(tevekenyseg, today);
-            if (!alreadyExists) {
+            // Mai napra eső összes időpont
+            for (TevekenysegIdopont idopont : gyak.getIdopontok()) {
+                if (!idopont.getNap().equalsIgnoreCase(todayName)) {
+                    continue;
+                }
+
+                // Már elvégezve ma erre az időpontra?
+                boolean marElvegezve = naploRepository.existsByTevekenysegAndIdopontAndDatum(
+                        tevekenyseg, idopont, today);
+
+                if (marElvegezve) {
+                    continue; // már megvan ma ez az időpont
+                }
+
+                // Új DTO minden egyes elvégzendő időpontra!
                 TevekenysegDTO dto = mapper.toTevekenysegDTO(tevekenyseg, gyak);
+
+                // Csak ezt az egy időpontot tesszük bele
+                dto.setIdopontok(List.of(mapper.idopontToDto(idopont)));
+
                 result.add(dto);
             }
         }
@@ -124,18 +150,23 @@ public class TevekenysegServiceImpl implements TevekenysegService{
 
 
     @Override
-    public void feladatElvegzese(int tevekenysegId, int dolgozoId, LocalDate datum) {
+    public void feladatElvegzese(int tevekenysegId, int idopontId, int dolgozoId, LocalDate datum) {
         Tevekenyseg tevekenyseg = tevekenysegRepository.findById(tevekenysegId)
                 .orElseThrow(() -> new RuntimeException("Tevekenyseg nem található: " + tevekenysegId));
 
         Dolgozo dolgozo = dolgozoRepository.findById(dolgozoId)
                 .orElseThrow(() -> new RuntimeException("Dolgozó nem található: " + dolgozoId));
 
-        boolean alreadyLogged = naploRepository.existsByTevekenysegAndDatum(tevekenyseg, datum);
+        TevekenysegIdopont idopont = idopontRepository.findById(idopontId)
+                .orElseThrow(() -> new RuntimeException("Idopont nem található: " + idopontId));
+
+
+        boolean alreadyLogged = naploRepository.existsByTevekenysegAndIdopontAndDatum(tevekenyseg, idopont, datum);
         if (alreadyLogged) return;
 
         TevekenysegNaplo naplo = new TevekenysegNaplo();
         naplo.setTevekenyseg(tevekenyseg);
+        naplo.setIdopont(idopont);
         naplo.setDolgozo(dolgozo);
         naplo.setDatum(datum);
 
@@ -169,7 +200,7 @@ public class TevekenysegServiceImpl implements TevekenysegService{
 
         TevekenysegGyakorisag gyak = new TevekenysegGyakorisag();
         gyak.setTevekenyseg(tevekenyseg);
-        gyak.setGyakorisag(TevekenysegGyakorisag.Gyakorisag.valueOf(dto.getGyakorisag().toUpperCase()));
+        gyak.setGyakorisag(TevekenysegGyakorisag.Gyakorisag.valueOf(dto.getGyakorisag().toLowerCase()));
         gyak.setKezdoDatum(dto.getKezdoDatum());
 /*
         List<String> napok = new ArrayList<>();
@@ -249,5 +280,12 @@ public class TevekenysegServiceImpl implements TevekenysegService{
 
         gyakorisagRepository.deleteByTevekenyseg(tevekenyseg);
         tevekenysegRepository.delete(tevekenyseg);
+    }
+
+    public Page<TevekenysegNaploDTO> osszesNaplobejegyzesLapozva(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size); // page index 0-tól
+        Page<TevekenysegNaplo> naplok = naploRepository.findAllByOrderByDatumDesc(pageable);
+
+        return naplok.map(mapper::TevekenysegNaploToDTO);
     }
 }

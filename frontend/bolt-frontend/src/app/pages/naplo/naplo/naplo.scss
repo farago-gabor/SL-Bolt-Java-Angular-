@@ -1,0 +1,48 @@
+/* naplo.component.scss */
+
+/* A teljes oldal paddingje */
+:host {
+  display: block;
+  padding: 2rem;
+  background-color: #f9f9f9;
+}
+
+/* Fő cím stílusa */
+h1 {
+  margin-bottom: 1.5rem;
+  color: #1976d2; /* Material Blue 600 */
+  font-weight: 500;
+}
+
+/* Mat-table kinézet javítása */
+.mat-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+}
+
+/* Fejléc cellák */
+.mat-header-cell {
+  background-color: #1976d2;
+  color: white;
+  font-weight: 500;
+  text-align: left;
+  padding: 0.75rem 1rem;
+}
+
+/* Adat cellák */
+.mat-cell {
+  padding: 0.75rem 1rem;
+}
+
+/* Sorok hover effekt */
+.mat-row:hover {
+  background-color: rgba(25, 118, 210, 0.05);
+}
+
+/* Árnyék az egész táblának */
+.mat-elevation-z8 {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}

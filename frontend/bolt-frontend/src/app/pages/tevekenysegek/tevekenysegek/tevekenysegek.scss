@@ -1,0 +1,91 @@
+/* tevekenysegek.component.scss */
+
+/* Teljes oldal container */
+:host {
+  display: block;
+  padding: 2rem;
+  background-color: #e3f2fd; /* halvány kék, Material Blue 50 */
+  min-height: 100vh;
+}
+
+/* Főcím és alcímek */
+h1, h2 {
+  margin-bottom: 1rem;
+  color: #1976d2; /* Material Blue 600 */
+  font-weight: 500;
+}
+
+/* Accordion panelok és admin CRUD panel */
+mat-accordion mat-expansion-panel {
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  padding: 1rem;
+}
+
+/* Admin CRUD panel külön kiemelve */
+.admin-panel {
+  margin-top: 2rem; /* nagyobb távolság a mai és elvégzett feladatoktól */
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Form mezők teljes szélesség */
+.full-width {
+  width: 100%;
+}
+
+/* Időpont sorok */
+.idopont-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.idopont-row mat-form-field {
+  flex: 1;
+}
+
+/* Táblázatok stílusa */
+.mat-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white; /* táblázatok fehér háttérrel */
+  margin-bottom: 2rem;
+}
+
+.mat-header-cell {
+  background-color: #1976d2;
+  color: white;
+  font-weight: 500;
+  text-align: left;
+  padding: 0.75rem 1rem;
+}
+
+.mat-cell {
+  padding: 0.75rem 1rem;
+}
+
+.mat-row:hover {
+  background-color: rgba(25, 118, 210, 0.05);
+}
+
+.mat-elevation-z8 {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+/* Gombok és interakciók */
+button {
+  cursor: pointer;
+}
+
+/* Input és select mezők */
+.mat-form-field {
+  margin-bottom: 1rem;
+}

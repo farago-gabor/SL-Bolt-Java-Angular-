@@ -1,1 +1,11 @@
-<p>menu works!</p>
+<nav>
+    <ul>
+        <li><a mat-button routerLink="/rendelesek">Rendelések</a></li>
+        <li><a mat-button routerLink="/tevekenysegek">Tevékenységek</a></li>
+        @if (isAdmin) {
+            <li><a mat-button routerLink="/naplo">Napló</a></li>
+            <li><a mat-button routerLink="/dolgozok">Dolgozók</a></li>
+        }
+        <li><button type="button" (click)="logout()">Kijelentkezés</button></li>
+    </ul>
+</nav>

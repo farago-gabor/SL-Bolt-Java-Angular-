@@ -18,17 +18,23 @@ export class TevekenysegService {
       return this.http.get<TevekenysegDTO[]>(`${this.url}/ma/elvegzendo`);
     }
 
-      feladatElvegzese(
-          tevekenysegId: number,
-          dolgozoId: number,
-          datum: string
-      ): Observable<void> {
-          const params = new HttpParams()
-            .set('tevekenysegId', tevekenysegId)
-            .set('dolgozoId', dolgozoId)
-            .set('datum', datum);
-          return this.http.post<void>(`${this.url}/elvegzes`, null, { params });
+    feladatElvegzese(
+      tevekenysegId: number,
+      dolgozoId: number,
+      datum: string,
+      idopontId?: number
+    ): Observable<void> {
+      let params = new HttpParams()
+        .set('tevekenysegId', tevekenysegId)
+        .set('dolgozoId', dolgozoId)
+        .set('datum', datum);
+
+      if (idopontId) {
+        params = params.set('idopontId', idopontId);
       }
+
+      return this.http.post<void>(`${this.url}/elvegzes`, null, { params });
+    }
 
     getMaiElvegzettFeladatok(): Observable<NaploDTO[]> {
       return this.http.get<NaploDTO[]>(`${this.url}/ma/elvegzettek`);
@@ -52,6 +58,11 @@ export class TevekenysegService {
 
     torolTevekenyseg(id: number): Observable<void> {
       return this.http.delete<void>(`${this.url}/${id}`);
+    }
+
+
+    getNaplobejegyzesLapozva(page: number, size: number): Observable<any> {
+      return this.http.get<any>(`${this.url}/naplo/page?page=${page}&size=${size}`);
     }
 
 }

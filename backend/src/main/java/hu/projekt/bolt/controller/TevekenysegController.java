@@ -4,6 +4,7 @@ import hu.projekt.bolt.dto.TevekenysegDTO;
 import hu.projekt.bolt.dto.TevekenysegNaploDTO;
 import hu.projekt.bolt.service.TevekenysegServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,9 +29,10 @@ public class TevekenysegController {
     @PostMapping("/elvegzes")
     public ResponseEntity<Void> feladatElvegzese(@RequestParam int tevekenysegId,
                                                  @RequestParam int dolgozoId,
+                                                 @RequestParam int idopontId,
                                                  @RequestParam String datum) {
         LocalDate parsedDatum = LocalDate.parse(datum);
-        tevekenysegService.feladatElvegzese(tevekenysegId, dolgozoId, parsedDatum);
+        tevekenysegService.feladatElvegzese(tevekenysegId, idopontId, dolgozoId, parsedDatum);
         return ResponseEntity.ok().build();
     }
 
@@ -75,6 +77,14 @@ public class TevekenysegController {
     public ResponseEntity<Void> torolTevekenyseg(@PathVariable int id) {
         tevekenysegService.torolTevekenyseg(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Szerveroldali napló feldolgozás
+    @GetMapping("/naplo/page")
+    public Page<TevekenysegNaploDTO> getNaplobejegyzesLapozva(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return tevekenysegService.osszesNaplobejegyzesLapozva(page, size);
     }
 
 }

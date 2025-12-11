@@ -11,6 +11,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class TevekenysegDTO {
 
+    private int id;
     private String megnevezes;
     private String leiras;
     private String gyakorisag;

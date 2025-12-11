@@ -1,15 +1,95 @@
+/* rendelesek.component.scss */
+
+/* Az egész oldal */
+:host {
+  display: block;
+  padding: 2rem;
+  background-color: #f9f9f9;
+}
+
+/* Fő cím */
+h1 {
+  margin-bottom: 1.5rem;
+  color: #1976d2; /* Material Blue 600 */
+  font-weight: 500;
+}
+
+/* Accordion panel stílus */
+mat-accordion mat-expansion-panel {
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+/* Form mezők teljes szélesség */
 .full-width {
   width: 100%;
 }
 
+/* Tételek listája */
 .tetel-row {
   display: flex;
-  align-items: center;
   gap: 1rem;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
 }
 
+.tetel-row mat-form-field {
+  flex: 1;
+}
+
+/* Tábla */
+.mat-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.mat-header-cell {
+  background-color: #1976d2;
+  color: white;
+  font-weight: 500;
+  text-align: left;
+  padding: 0.75rem 1rem;
+}
+
+.mat-cell {
+  padding: 0.75rem 1rem;
+}
+
+.mat-row:hover {
+  background-color: rgba(25, 118, 210, 0.05);
+}
+
+.mat-elevation-z8 {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+/* Rendelés tételek listája a cellában */
 .tetel-list {
-  padding-left: 1rem;
+  list-style-type: none;
   margin: 0;
+  padding-left: 0;
+}
+
+/* Státusz szerkesztő panel */
+.statusz-szerkeszto-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.statusz-szerkeszto-panel div {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Gombok */
+button {
+  cursor: pointer;
 }

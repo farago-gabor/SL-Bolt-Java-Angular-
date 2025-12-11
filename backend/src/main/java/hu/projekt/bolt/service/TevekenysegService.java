@@ -12,7 +12,7 @@ public interface TevekenysegService {
     List<TevekenysegDTO> maiElvegzendoFeladatok();
 
     // 1.b - Feladat elvégzése (naplózás)
-    void feladatElvegzese(int tevekenysegId, int dolgozoId, LocalDate datum);
+    void feladatElvegzese(int tevekenysegId, int idopontId, int dolgozoId, LocalDate datum);
 
     // 2.a - Mai elvégzett feladatok lekérése
     List<TevekenysegNaploDTO> maiElvegzettFeladatok();

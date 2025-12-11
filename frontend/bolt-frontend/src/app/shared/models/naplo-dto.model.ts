@@ -7,4 +7,6 @@ export interface NaploDTO {
     tevekenysegMegnevezes: string;
     tevekenysegLeiras: string;
     datum: string; // ISO string
+    nap?: string;    // pl.: "hetfo"
+    idopont?: string; // pl.: "08:00"
 }

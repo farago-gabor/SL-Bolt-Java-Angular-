@@ -18,6 +18,10 @@ export class Menu {
     return this.authService.getUser()?.szerepkor === 'admin';
   }
   
+  get isLoggedIn() {
+    return this.authService.isLoggedIn();
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

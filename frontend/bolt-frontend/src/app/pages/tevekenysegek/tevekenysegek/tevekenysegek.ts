@@ -114,6 +114,7 @@ export class Tevekenysegek implements OnInit {
       console.log('Törlendő tevékenység ID:', id);
       this.tevekenysegService.torolTevekenyseg(id).subscribe(() => {
         this.loadOsszesTevekenyseg();
+        this.loadMaiFeladatok();
       });
     }
   }

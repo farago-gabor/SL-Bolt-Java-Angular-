@@ -1,11 +1,11 @@
 Todo:
-	- Összes árucikknév listázása, 
-	- RendelésService és Controller:
 		
 	
 
 
 DONE:
+	- Összes árucikknév listázása, 
+	- RendelésService és Controller
 	- A DTO-nem jól működik, curl parancsra hozzáadja az adatbázishoz az új elemet, de nem írja ki
 		- pl.: curl -X POST http://localhost:8080/api/dolgozok ^
 			More?  -H "Authorization: Bearer TOKENNÉV^

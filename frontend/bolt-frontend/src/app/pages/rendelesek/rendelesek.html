@@ -106,6 +106,51 @@
     </ng-container>
 
     <!-- Státusz -->
+  <!-- UJ panel 
+   
+  <div class="statusz-szerkeszto-panel">
+
+  <mat-checkbox
+    [checked]="isStatusChecked(RendelesStatus.BEERKEZETT)"
+    (change)="onStatusChange(RendelesStatus.BEERKEZETT)">
+    Beérkezett
+  </mat-checkbox>
+
+  <mat-checkbox
+    [checked]="isStatusChecked(RendelesStatus.FELRETEVE)"
+    (change)="onStatusChange(RendelesStatus.FELRETEVE)">
+    Félretéve
+  </mat-checkbox>
+
+  <mat-checkbox
+    [checked]="isStatusChecked(RendelesStatus.SZOLTAM)"
+    (change)="onStatusChange(RendelesStatus.SZOLTAM)">
+    Szóltam
+  </mat-checkbox>
+
+  <mat-checkbox
+    [checked]="isStatusChecked(RendelesStatus.ELVITTE)"
+    (change)="onStatusChange(RendelesStatus.ELVITTE)">
+    Elvitte
+  </mat-checkbox>
+
+  <div>
+    <button mat-button color="primary" (click)="mentesStatusz()">
+      Mentés
+    </button>
+
+    <button mat-button (click)="szerkesztettRendeles = null">
+      Mégse
+    </button>
+  </div>
+
+</div>
+
+else:
+
+{{ getStatusLabel(rendeles.status) }}
+  
+  -->
     <ng-container matColumnDef="statusz">
     <mat-header-cell *matHeaderCellDef> Státusz </mat-header-cell>
     <mat-cell *matCellDef="let rendeles">

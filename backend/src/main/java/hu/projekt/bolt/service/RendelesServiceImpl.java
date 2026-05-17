@@ -82,6 +82,22 @@ public class RendelesServiceImpl implements RendelesService{
         return dto;
     }
 
+    /*
+    @Override
+    public RendelesDTO modositStatusz(int id, Status status) {
+        Rendeles rendeles = rendelesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("A rendelés nem található"));
+
+
+        rendeles.setStatus(status);
+
+        RendelesDTO dto = rendelesMapper.rendelesToDto(rendeles);
+        dto.setTetelek(rendelesMapper.rendelesTetelListaToDto(rendelesTetelRepository.findByRendelesId(rendeles.getId())));
+
+        return dto;
+    }
+     */
+
     @Override
     public void torolRendeles(int id) {
         rendelesRepository.deleteById(id);

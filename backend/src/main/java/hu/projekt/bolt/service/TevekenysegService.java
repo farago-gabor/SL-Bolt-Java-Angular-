@@ -2,6 +2,8 @@ package hu.projekt.bolt.service;
 
 import hu.projekt.bolt.dto.TevekenysegDTO;
 import hu.projekt.bolt.dto.TevekenysegNaploDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,7 +20,7 @@ public interface TevekenysegService {
     List<TevekenysegNaploDTO> maiElvegzettFeladatok();
 
     // 3.a - Naplózott tevékenységek lekérése (összes)
-    List<TevekenysegNaploDTO> osszesNaplobejegyzes();
+    Page<TevekenysegNaploDTO> osszesNaplobejegyzes(Pageable pageable);
 
     // 4.a - Tevékenység hozzáadása (gyakorisággal együtt)
     void ujTevekenyseg(TevekenysegDTO dto);
@@ -33,10 +35,4 @@ public interface TevekenysegService {
     // 4.d - Tevékenység törlése
     void torolTevekenyseg(int tevekenysegId);
 
-    /*
-        DolgozoDTO ujDolgozo(String nev, String email, String jelszo);
-        DolgozoDTO modositDolgozo(int id, String nev, String email, String szerepkor);
-        DolgozoDTO modositJelszo(int id, String ujJelszo);
-        void torolDolgozo(int id);
-    */
 }

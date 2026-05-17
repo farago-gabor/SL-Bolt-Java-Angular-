@@ -5,6 +5,7 @@ import hu.projekt.bolt.dto.TevekenysegNaploDTO;
 import hu.projekt.bolt.service.TevekenysegServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,8 +46,11 @@ public class TevekenysegController {
 
     // 3.a - Összes naplóbejegyzés
     @GetMapping("/naplo")
-    public ResponseEntity<List<TevekenysegNaploDTO>> getOsszesNaplobejegyzes() {
-        List<TevekenysegNaploDTO> naplo = tevekenysegService.osszesNaplobejegyzes();
+    public ResponseEntity<Page<TevekenysegNaploDTO>> getOsszesNaplobejegyzes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<TevekenysegNaploDTO> naplo = tevekenysegService.osszesNaplobejegyzes(PageRequest.of(page, size));
         return ResponseEntity.ok(naplo);
     }
 

@@ -10,6 +10,7 @@ public interface RendelesService {
     // ujRendeles, modositStatusz, modositRendeles, torolRendeles, osszesRendeles, getRendelesTetelek , getRendelesById
 
     RendelesDTO ujRendeles(String email, String telefonszam, LocalDate hatarido, int dolgozoId, List<RendelesTetelDTO> tetelek);
+    //RendelesDTO modositStatusz(int id, Status status);
     RendelesDTO modositStatusz(int id, boolean beerkezet, boolean felreteve, boolean szoltam, boolean elvitte);
     void torolRendeles(int id);
     List<RendelesDTO> osszesRendeles();
@@ -17,6 +18,6 @@ public interface RendelesService {
     RendelesDTO getRendelesById(int id);
 
     // EXTRA funkció, ha odajutok: lehessen szerkeszteni is az adott rendelés információit, ne csak a státuszát
-//    RendelesDTO modositRendeles(String email, String telefonszam, LocalDate hatarido, int dolgozoId, List<RendelesTetelDTO> tetelek);
+    // RendelesDTO modositRendeles(String email, String telefonszam, LocalDate hatarido, int dolgozoId, List<RendelesTetelDTO> tetelek);
 
 }

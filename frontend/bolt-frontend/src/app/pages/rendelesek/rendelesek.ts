@@ -138,6 +138,69 @@ export class Rendelesek implements OnInit {
     });
   }
 
+  /* NEW
+  onStatusChange(status: RendelesStatus) {
+
+    if (!this.szerkesztettRendeles) return;
+
+    this.szerkesztettRendeles.status = status;
+  }
+
+  isStatusChecked(status: RendelesStatus): boolean {
+
+  if (!this.szerkesztettRendeles) return false;
+
+  const current = this.getStatusOrder(
+    this.szerkesztettRendeles.status
+  );
+
+  const target = this.getStatusOrder(status);
+
+  return current >= target;
+}
+
+  getStatusOrder(status: RendelesStatus): number {
+
+    switch(status) {
+
+      case RendelesStatus.BEERKEZETT:
+        return 1;
+
+      case RendelesStatus.FELRETEVE:
+        return 2;
+
+      case RendelesStatus.SZOLTAM:
+        return 3;
+
+      case RendelesStatus.ELVITTE:
+        return 4;
+
+      default:
+        return 0;
+    }
+  }
+
+  getStatusLabel(status: RendelesStatus): string {
+
+  switch(status) {
+
+    case RendelesStatus.BEERKEZETT:
+      return 'Beérkezett';
+
+    case RendelesStatus.FELRETEVE:
+      return 'Félretéve';
+
+    case RendelesStatus.SZOLTAM:
+      return 'Szóltam';
+
+    case RendelesStatus.ELVITTE:
+      return 'Elvitte';
+
+    default:
+      return '';
+  }
+}
+  */
   onStatusChange(status: 'beerkezet' | 'felreteve' | 'szoltam' | 'elvitte', checked: boolean) {
     if (!this.szerkesztettRendeles) return;
 

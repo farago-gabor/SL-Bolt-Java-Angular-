@@ -44,6 +44,18 @@ export class TevekenysegService {
       return this.http.get<NaploDTO[]>(`${this.url}/naplo`);
     }
 
+    /*
+    getOsszesNaplobejegyzes(
+      page: number,
+      size: number
+    ): Observable<PageResponse<NaploDTO>> {
+
+      return this.http.get<PageResponse<NaploDTO>>(
+        `${this.url}/naplo?page=${page}&size=${size}`
+      );
+    }
+    */
+
     ujTevekenyseg(dto: TevekenysegDTO): Observable<void> {
       return this.http.post<void>(this.url, dto);
     }

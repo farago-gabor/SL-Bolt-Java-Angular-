@@ -1,4 +1,5 @@
 <nav>
+    @if (isLoggedIn) {
     <ul>
         <li><a mat-button routerLink="/rendelesek">Rendelések</a></li>
         <li><a mat-button routerLink="/tevekenysegek">Tevékenységek</a></li>
@@ -8,4 +9,5 @@
         }
         <li><button type="button" (click)="logout()">Kijelentkezés</button></li>
     </ul>
+    }
 </nav>

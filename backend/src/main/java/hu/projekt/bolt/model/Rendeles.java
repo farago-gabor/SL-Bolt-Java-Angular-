@@ -24,6 +24,9 @@ public class Rendeles {
     private String telefonszam;
     private LocalDate hatarido;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     private Boolean beerkezett = false;
     private Boolean felreteve = false;
     private Boolean szoltam = false;
@@ -35,5 +38,12 @@ public class Rendeles {
 
     @Column(name = "felvetel_datum")
     private LocalDate felvetelDatum;
+
+    public enum Status {
+        BEERKEZETT,
+        FELRETEVE,
+        SZOLTAM,
+        ELVITTE
+    }
 
 }

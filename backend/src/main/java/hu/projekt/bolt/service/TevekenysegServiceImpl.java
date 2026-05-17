@@ -184,11 +184,9 @@ public class TevekenysegServiceImpl implements TevekenysegService{
     }
 
     @Override
-    public List<TevekenysegNaploDTO> osszesNaplobejegyzes() {
-        List<TevekenysegNaplo> naplok = naploRepository.findAll();
-        return naplok.stream()
-                .map(mapper::TevekenysegNaploToDTO)
-                .toList();
+    public Page<TevekenysegNaploDTO> osszesNaplobejegyzes(Pageable pageable) {
+        Page<TevekenysegNaplo> naplok = naploRepository.findAll(pageable);
+        return naplok.map(mapper::TevekenysegNaploToDTO);
     }
 
     @Override

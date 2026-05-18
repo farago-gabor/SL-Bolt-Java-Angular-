@@ -92,6 +92,27 @@ CREATE TABLE rendelesek (
     FOREIGN KEY (felvette_dolgozo_id) REFERENCES dolgozok(id)
 );
 
+/*
+CREATE TABLE rendelesek (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100),
+    telefonszam VARCHAR(30),
+    hatarido DATE,
+
+    status ENUM(
+        'BEERKEZETT',
+        'FELRETEVE',
+        'SZOLTAM',
+        'ELVITTE'
+    ) NOT NULL DEFAULT 'BEERKEZETT',
+
+    felvette_dolgozo_id INT,
+    felvetel_datum DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (felvette_dolgozo_id) REFERENCES dolgozok(id)
+);
+*/
+
 
 CREATE TABLE arucikkek (
     id INT AUTO_INCREMENT PRIMARY KEY,

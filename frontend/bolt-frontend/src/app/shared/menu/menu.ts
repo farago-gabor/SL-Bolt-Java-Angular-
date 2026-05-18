@@ -17,10 +17,6 @@ export class Menu {
   get isAdmin() {
     return this.authService.getUser()?.szerepkor === 'admin';
   }
-
-  get isLoggedIn() {
-    return this.authService.isLoggedIn();
-  }
   
   get isLoggedIn() {
     return this.authService.isLoggedIn();

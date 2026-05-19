@@ -106,94 +106,64 @@
     </ng-container>
 
     <!-- Státusz -->
-  <!-- UJ panel 
-   
-  <div class="statusz-szerkeszto-panel">
+  <ng-container matColumnDef="statusz">
+  <mat-header-cell *matHeaderCellDef>
+    Státusz
+  </mat-header-cell>
 
-  <mat-checkbox
-    [checked]="isStatusChecked(RendelesStatus.BEERKEZETT)"
-    (change)="onStatusChange(RendelesStatus.BEERKEZETT)">
-    Beérkezett
-  </mat-checkbox>
+  <mat-cell *matCellDef="let rendeles">
 
-  <mat-checkbox
-    [checked]="isStatusChecked(RendelesStatus.FELRETEVE)"
-    (change)="onStatusChange(RendelesStatus.FELRETEVE)">
-    Félretéve
-  </mat-checkbox>
+    @if (szerkesztettRendeles === rendeles) {
 
-  <mat-checkbox
-    [checked]="isStatusChecked(RendelesStatus.SZOLTAM)"
-    (change)="onStatusChange(RendelesStatus.SZOLTAM)">
-    Szóltam
-  </mat-checkbox>
+      <div class="statusz-szerkeszto-panel">
 
-  <mat-checkbox
-    [checked]="isStatusChecked(RendelesStatus.ELVITTE)"
-    (change)="onStatusChange(RendelesStatus.ELVITTE)">
-    Elvitte
-  </mat-checkbox>
+        <mat-radio-group
+          [(ngModel)]="szerkesztettRendeles!.status">
 
-  <div>
-    <button mat-button color="primary" (click)="mentesStatusz()">
-      Mentés
-    </button>
+          <mat-radio-button [value]="RendelesStatus.NINCS">
+            Nincs meg
+          </mat-radio-button>
 
-    <button mat-button (click)="szerkesztettRendeles = null">
-      Mégse
-    </button>
-  </div>
-
-</div>
-
-else:
-
-{{ getStatusLabel(rendeles.status) }}
-  
-  -->
-    <ng-container matColumnDef="statusz">
-    <mat-header-cell *matHeaderCellDef> Státusz </mat-header-cell>
-    <mat-cell *matCellDef="let rendeles">
-        @if (szerkesztettRendeles !== null && szerkesztettRendeles == rendeles) {
-        <div class="statusz-szerkeszto-panel">
-          <mat-checkbox 
-            [checked]="szerkesztettRendeles.beerkezet" 
-            (change)="onStatusChange('beerkezet', $event.checked)">
+          <mat-radio-button [value]="RendelesStatus.BEERKEZETT">
             Beérkezett
-          </mat-checkbox>
+          </mat-radio-button>
 
-          <mat-checkbox 
-            [checked]="szerkesztettRendeles.felreteve" 
-            (change)="onStatusChange('felreteve', $event.checked)">
+          <mat-radio-button [value]="RendelesStatus.FELRETEVE">
             Félretéve
-          </mat-checkbox>
+          </mat-radio-button>
 
-          <mat-checkbox 
-            [checked]="szerkesztettRendeles.szoltam" 
-            (change)="onStatusChange('szoltam', $event.checked)">
+          <mat-radio-button [value]="RendelesStatus.SZOLTAM">
             Szóltam
-          </mat-checkbox>
+          </mat-radio-button>
 
-          <mat-checkbox 
-            [checked]="szerkesztettRendeles.elvitte" 
-            (change)="onStatusChange('elvitte', $event.checked)">
+          <mat-radio-button [value]="RendelesStatus.ELVITTE">
             Elvitte
-          </mat-checkbox>
-          
-          <div>
-          <button mat-button color="primary" (click)="mentesStatusz()">Mentés</button>
-          <button mat-button (click)="szerkesztettRendeles = null">Mégse</button>
-          </div>
-        </div>
-        } @else {
-        Beérkezett: {{ rendeles.beerkezet ? '✔' : '✖' }} <br>
-        Félretéve: {{ rendeles.felreteve ? '✔' : '✖' }} <br>
-        Szólva: {{ rendeles.szoltam ? '✔' : '✖' }} <br>
-        Elvitte: {{ rendeles.elvitte ? '✔' : '✖' }} <br>
-        }
-    </mat-cell>
-    </ng-container>
+          </mat-radio-button>
 
+        </mat-radio-group>
+
+        <div>
+          <button mat-button color="primary"
+                  (click)="mentesStatusz()">
+            Mentés
+          </button>
+
+          <button mat-button
+                  (click)="szerkesztettRendeles = null">
+            Mégse
+          </button>
+        </div>
+
+      </div>
+
+    } @else {
+
+      {{ getStatusLabel(rendeles.status) }}
+
+    }
+
+  </mat-cell>
+</ng-container>
     <!-- Felvette -->
     <ng-container matColumnDef="dolgozoId">
         <mat-header-cell *matHeaderCellDef> Felvette </mat-header-cell>
@@ -209,24 +179,6 @@ else:
             <button mat-button color="warn" (click)="torolRendeles(rendeles.id)">Törlés</button>
         </mat-cell>
     </ng-container>
-<!--
-    
-@if (szerkesztettRendeles!== null && szerkesztettRendeles == rendeles) {
-
-  <div class="statusz-szerkeszto-panel">
-    <mat-checkbox [(ngModel)]="szerkesztettRendeles.beerkezet">Beérkezett</mat-checkbox>
-    <mat-checkbox [(ngModel)]="szerkesztettRendeles.felreteve">Félretéve</mat-checkbox>
-    <mat-checkbox [(ngModel)]="szerkesztettRendeles.szoltam">Szólva</mat-checkbox>
-    <mat-checkbox [(ngModel)]="szerkesztettRendeles.elvitte">Elvitte</mat-checkbox>
-
-    <div>
-      <button mat-button color="primary" (click)="mentesStatusz()">Mentés</button>
-      <button mat-button (click)="szerkesztettRendeles = null">Mégse</button>
-    </div>
-  </div>
-  }
-
--->
     <!-- Fejlécek és sorok -->
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>

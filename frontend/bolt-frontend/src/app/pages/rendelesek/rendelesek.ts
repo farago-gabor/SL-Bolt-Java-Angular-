@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RendelesTetelDTO } from '../../shared/models/rendeles-tetel-dto.model';
 import { RendelesService } from '../../shared/services/rendelesService/rendeles-service';
-import { RendelesDTO } from '../../shared/models/rendeles-dto.model';
+import { RendelesDTO, RendelesStatus } from '../../shared/models/rendeles-dto.model';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -18,6 +18,7 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 import { Arucikk } from '../../shared/models/arucikk.model';
 import { MatAutocomplete, MatAutocompleteModule } from '@angular/material/autocomplete';
 import { map, Observable, of, startWith } from 'rxjs';
+import { MatRadioModule } from '@angular/material/radio';
 
 
 @Component({
@@ -25,7 +26,7 @@ import { map, Observable, of, startWith } from 'rxjs';
   imports: [
     MatTableModule, MatExpansionModule, MatButtonModule, MatFormField, MatInputModule,
     MatIconModule, MatCheckboxModule, FormsModule, MatDatepickerModule, MatAutocomplete, ReactiveFormsModule,
-    MatAutocompleteModule, AsyncPipe, MatOptionModule
+    MatAutocompleteModule, AsyncPipe, MatOptionModule, MatRadioModule
 ],
   providers: [
     provideNativeDateAdapter(),
@@ -43,6 +44,7 @@ export class Rendelesek implements OnInit {
   rendelesTetelek: { [rendelesId: number]: RendelesTetelDTO[] } = {};
   ujRendelesMegjelenitese = false;
   sikeresTorles = false;
+  RendelesStatus = RendelesStatus
 
   arucikkek: Arucikk[] = [];
 
@@ -121,129 +123,52 @@ export class Rendelesek implements OnInit {
     }
   }
 
-
+   
   mentesStatusz() {
+
     if (!this.szerkesztettRendeles) return;
 
-    const r = this.szerkesztettRendeles;
-
     this.rendelesService.modositStatusz(
-      r.id,
-      r.beerkezet,
-      r.felreteve,
-      r.szoltam,
-      r.elvitte
+      this.szerkesztettRendeles.id,
+      this.szerkesztettRendeles.status
     ).subscribe(() => {
+
       this.szerkesztettRendeles = null;
+
+      this.loadRendelesek();
     });
   }
 
-  /* NEW
   onStatusChange(status: RendelesStatus) {
 
     if (!this.szerkesztettRendeles) return;
 
     this.szerkesztettRendeles.status = status;
-  }
-
-  isStatusChecked(status: RendelesStatus): boolean {
-
-  if (!this.szerkesztettRendeles) return false;
-
-  const current = this.getStatusOrder(
-    this.szerkesztettRendeles.status
-  );
-
-  const target = this.getStatusOrder(status);
-
-  return current >= target;
-}
-
-  getStatusOrder(status: RendelesStatus): number {
-
-    switch(status) {
-
-      case RendelesStatus.BEERKEZETT:
-        return 1;
-
-      case RendelesStatus.FELRETEVE:
-        return 2;
-
-      case RendelesStatus.SZOLTAM:
-        return 3;
-
-      case RendelesStatus.ELVITTE:
-        return 4;
-
-      default:
-        return 0;
-    }
-  }
+  }    
 
   getStatusLabel(status: RendelesStatus): string {
 
-  switch(status) {
+    switch(status) {
 
-    case RendelesStatus.BEERKEZETT:
-      return 'Beérkezett';
+      case RendelesStatus.NINCS:
+        return 'Nincs meg';
 
-    case RendelesStatus.FELRETEVE:
-      return 'Félretéve';
+      case RendelesStatus.BEERKEZETT:
+        return 'Beérkezett';
 
-    case RendelesStatus.SZOLTAM:
-      return 'Szóltam';
+      case RendelesStatus.FELRETEVE:
+        return 'Félretéve';
 
-    case RendelesStatus.ELVITTE:
-      return 'Elvitte';
+      case RendelesStatus.SZOLTAM:
+        return 'Szóltam';
 
-    default:
-      return '';
-  }
-}
-  */
-  onStatusChange(status: 'beerkezet' | 'felreteve' | 'szoltam' | 'elvitte', checked: boolean) {
-    if (!this.szerkesztettRendeles) return;
+      case RendelesStatus.ELVITTE:
+        return 'Elvitte';
 
-    const r = this.szerkesztettRendeles;
-
-    // előrehaladás: csak ha az előző lépés pipálva van
-    if (checked) {
-      switch(status) {
-        case 'beerkezet':
-          r.beerkezet = true;
-          break;
-        case 'felreteve':
-          if (r.beerkezet) r.felreteve = true;
-          break;
-        case 'szoltam':
-          if (r.felreteve) r.szoltam = true;
-          break;
-        case 'elvitte':
-          if (r.szoltam) r.elvitte = true;
-          break;
-      }
-    } 
-    // visszafelé: csak a későbbi státuszok engedik a "ki" pipát
-    else {
-      switch(status) {
-        case 'beerkezet':
-          // csak akkor vehetjük ki, ha nincs semmi utána pipálva
-          if (!r.felreteve && !r.szoltam && !r.elvitte) r.beerkezet = false;
-          break;
-        case 'felreteve':
-          if (!r.szoltam && !r.elvitte) r.felreteve = false;
-          break;
-        case 'szoltam':
-          if (!r.elvitte) r.szoltam = false;
-          break;
-        case 'elvitte':
-          r.elvitte = false;
-          break;
-      }
+      default:
+        return '';
     }
   }
-
-
 
   // autocompletehez:
   addTetel() {
@@ -295,42 +220,6 @@ export class Rendelesek implements OnInit {
 
     this.filteredArucikkek = newFiltered;
   }
-/*
-  addTetel() {
-    const index = this.ujRendeles.tetelek.length;
-
-    this.ujRendeles.tetelek.push({
-      arucikkNev: '',
-      mennyiseg: 1,
-      megjegyzes: ''
-    });
-
-    // Autocomplete control és szűrés beállítása
-    this.arucikkNevControls[index] = new FormControl('');
-    this.filteredArucikkek[index] = this.arucikkNevControls[index].valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterArucikkek(value || ''))
-    );
-
-      // Subscribe to update tetel.arucikkNev whenever formControl changes
-      this.arucikkNevControls[index].valueChanges.subscribe(value => {
-        this.ujRendeles.tetelek[index].arucikkNev = value;
-      });
-  }
-
-  removeTetel(index: number) {
-    this.ujRendeles.tetelek.splice(index, 1);
-    delete this.arucikkNevControls[index];
-    delete this.filteredArucikkek[index];
-  }
-
-  private _filterArucikkek(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.arucikkek
-      .map(a => a.megnevezes)
-      .filter(option => option.toLowerCase().includes(filterValue));
-  }
-  */
     
 }
 

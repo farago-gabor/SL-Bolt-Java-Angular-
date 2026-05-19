@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environment/environment';
-import { RendelesDTO } from '../../models/rendeles-dto.model';
+import { RendelesDTO, RendelesStatus } from '../../models/rendeles-dto.model';
 import { RendelesTetelDTO } from '../../models/rendeles-tetel-dto.model';
 import { Arucikk } from '../../models/arucikk.model';
 
@@ -30,22 +30,22 @@ export class RendelesService {
 
     return this.http.post<RendelesDTO>(this.url, tetelek, { params });
   }
-
+  
   modositStatusz(
     id: number,
-    beerkezet: boolean,
-    felreteve: boolean,
-    szoltam: boolean,
-    elvitte: boolean
+    status: RendelesStatus
   ): Observable<RendelesDTO> {
-    const params = new HttpParams()
-      .set('beerkezet', beerkezet)
-      .set('felreteve', felreteve)
-      .set('szoltam', szoltam)
-      .set('elvitte', elvitte);
 
-    return this.http.put<RendelesDTO>(`${this.url}/${id}/statusz`, null, { params });
+    const params = new HttpParams()
+      .set('status', status);
+
+    return this.http.put<RendelesDTO>(
+      `${this.url}/${id}/statusz`,
+      null,
+      { params }
+    );
   }
+  
 
   torolRendeles(id: number): Observable<void> {
     return this.http.delete<void>(`${this.url}/${id}`);

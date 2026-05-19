@@ -4,6 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TevekenysegDTO } from '../../models/tevekenyseg-dto.model';
 import { NaploDTO } from '../../models/naplo-dto.model';
+import { PageResponse } from '../../models/page-response';
 
 @Injectable({
   providedIn: 'root'
@@ -39,12 +40,7 @@ export class TevekenysegService {
     getMaiElvegzettFeladatok(): Observable<NaploDTO[]> {
       return this.http.get<NaploDTO[]>(`${this.url}/ma/elvegzettek`);
     }
-
-    getOsszesNaplobejegyzes(): Observable<NaploDTO[]> {
-      return this.http.get<NaploDTO[]>(`${this.url}/naplo`);
-    }
-
-    /*
+    
     getOsszesNaplobejegyzes(
       page: number,
       size: number
@@ -54,7 +50,7 @@ export class TevekenysegService {
         `${this.url}/naplo?page=${page}&size=${size}`
       );
     }
-    */
+    
 
     ujTevekenyseg(dto: TevekenysegDTO): Observable<void> {
       return this.http.post<void>(this.url, dto);

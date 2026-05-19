@@ -1,44 +1,6 @@
 <h1>Napló</h1>
 
 <mat-table [dataSource]="naplo" class="mat-elevation-z8">
-  <ng-container matColumnDef="id">
-    <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
-    <mat-cell *matCellDef="let t">{{ t.id }}</mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="tevekenysegMegnevezes">
-    <mat-header-cell *matHeaderCellDef>Tevékenység megnevezése</mat-header-cell>
-    <mat-cell *matCellDef="let t">{{ t.tevekenysegMegnevezes }}</mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="tevekenysegLeiras">
-    <mat-header-cell *matHeaderCellDef>Tevékenység leírása</mat-header-cell>
-    <mat-cell *matCellDef="let t">{{ t.tevekenysegLeiras }}</mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="datum">
-    <mat-header-cell *matHeaderCellDef>Dátum</mat-header-cell>
-    <mat-cell *matCellDef="let t">{{ t.datum }}</mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="idopont">
-    <mat-header-cell *matHeaderCellDef>Időpont</mat-header-cell>
-    <mat-cell *matCellDef="let t">{{ t.idopont }}</mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="dolgozoNev">
-    <mat-header-cell *matHeaderCellDef>Elvégezte</mat-header-cell>
-    <mat-cell *matCellDef="let t">{{ t.dolgozoNev }}</mat-cell>
-  </ng-container>
-
-  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-</mat-table>
-
-<!--
-<h1>Napló</h1>
-
-<mat-table [dataSource]="naplo" class="mat-elevation-z8">
 
   <ng-container matColumnDef="id">
     <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
@@ -101,4 +63,3 @@
   [pageSizeOptions]="[5, 10, 20]"
   (page)="onPageChange($event)">
 </mat-paginator>
--->

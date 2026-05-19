@@ -4,7 +4,7 @@ import { TevekenysegService } from '../../../shared/services/tevekenysegService/
 import { TevekenysegDTO } from '../../../shared/models/tevekenyseg-dto.model';
 import { MatTableModule } from '@angular/material/table';
 import { AsyncPipe } from '@angular/common';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-naplo',
@@ -24,17 +24,12 @@ export class Naplo implements OnInit {
   constructor(private tevekenysegService: TevekenysegService) {}
 
   ngOnInit(): void {
-    this.tevekenysegService.getOsszesNaplobejegyzes().subscribe(data => {
-      this.naplo = data.map(d => ({
-        ...d,
-        datum: new Date(d.datum).toLocaleDateString() // optional formatting
-      }));
-    });
+    this.loadData();
   }
 
   loadData() {
     this.tevekenysegService
-      .getNaplobejegyzesLapozva(this.page, this.size)
+      .getOsszesNaplobejegyzes(this.page, this.size)
       .subscribe(response => {
 
         this.naplo = response.content.map((d: NaploDTO) => ({
@@ -46,4 +41,10 @@ export class Naplo implements OnInit {
       });
   }
 
+  onPageChange(event: PageEvent): void {
+    this.page = event.pageIndex;
+    this.size = event.pageSize;
+
+    this.loadData();
+  }
 }

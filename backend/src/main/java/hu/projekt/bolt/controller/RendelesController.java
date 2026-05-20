@@ -3,6 +3,7 @@ package hu.projekt.bolt.controller;
 import hu.projekt.bolt.dto.RendelesDTO;
 import hu.projekt.bolt.dto.RendelesTetelDTO;
 import hu.projekt.bolt.model.Arucikk;
+import hu.projekt.bolt.model.Rendeles;
 import hu.projekt.bolt.service.RendelesServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +33,12 @@ public class RendelesController {
     }
 
     @PutMapping("/{id}/statusz")
-    public ResponseEntity<RendelesDTO> modositStatusz(@PathVariable int id,
-                                                      @RequestParam boolean beerkezet,
-                                                      @RequestParam boolean felreteve,
-                                                      @RequestParam boolean szoltam,
-                                                      @RequestParam boolean elvitte) {
+    public ResponseEntity<RendelesDTO> modositStatusz(
+            @PathVariable int id,
+            @RequestParam Rendeles.Status status) {
 
-        RendelesDTO updatedRendeles = rendelesService.modositStatusz(id, beerkezet, felreteve, szoltam, elvitte);
+        RendelesDTO updatedRendeles =
+                rendelesService.modositStatusz(id, status);
 
         return ResponseEntity.ok(updatedRendeles);
     }

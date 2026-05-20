@@ -27,11 +27,6 @@ public class Rendeles {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    private Boolean beerkezett = false;
-    private Boolean felreteve = false;
-    private Boolean szoltam = false;
-    private Boolean elvitte = false;
-
     @ManyToOne
     @JoinColumn(name = "felvette_dolgozo_id")
     private Dolgozo felvetteDolgozo;
@@ -40,6 +35,7 @@ public class Rendeles {
     private LocalDate felvetelDatum;
 
     public enum Status {
+        NINCS,
         BEERKEZETT,
         FELRETEVE,
         SZOLTAM,

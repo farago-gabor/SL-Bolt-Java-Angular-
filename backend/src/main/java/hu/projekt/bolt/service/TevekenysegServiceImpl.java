@@ -83,38 +83,8 @@ public class TevekenysegServiceImpl implements TevekenysegService{
     }
 
     // segédfüggvény, hogy jól vizsgáljuk a 2 és 3 heti ismétlődést
-    /*
     private boolean isAktualisMa(TevekenysegGyakorisag gyak, LocalDate today, String todayName) {
-        List<String> napok = gyak.getNapok();
-        TevekenysegGyakorisag.Gyakorisag tipus = gyak.getGyakorisag();
-        LocalDate kezdoDatum = gyak.getKezdoDatum();
-
-        switch (tipus) {
-            case MINDIG:
-                return true;
-
-            case EGYSZERI:
-                return kezdoDatum != null && kezdoDatum.equals(today);
-
-            case HETI:
-                return napok != null && napok.contains(todayName);
-
-            case KETHETI:
-            case HAROMHETI:
-                if (napok == null || !napok.contains(todayName)) return false;
-                if (kezdoDatum == null) return false;
-
-                long weeksBetween = ChronoUnit.WEEKS.between(kezdoDatum, today);
-                int modulo = tipus == TevekenysegGyakorisag.Gyakorisag.KETHETI ? 2 : 3;
-
-                return weeksBetween % modulo == 0;
-
-            default:
-                return false;
-        }
-    }*/
-    private boolean isAktualisMa(TevekenysegGyakorisag gyak, LocalDate today, String todayName) {
-        List<TevekenysegIdopont> idopontok = gyak.getIdopontok(); // Most az idopontokból dolgozunk
+        List<TevekenysegIdopont> idopontok = gyak.getIdopontok();
         TevekenysegGyakorisag.Gyakorisag tipus = gyak.getGyakorisag();
         LocalDate kezdoDatum = gyak.getKezdoDatum();
 
@@ -200,20 +170,6 @@ public class TevekenysegServiceImpl implements TevekenysegService{
         gyak.setTevekenyseg(tevekenyseg);
         gyak.setGyakorisag(TevekenysegGyakorisag.Gyakorisag.valueOf(dto.getGyakorisag().toLowerCase()));
         gyak.setKezdoDatum(dto.getKezdoDatum());
-/*
-        List<String> napok = new ArrayList<>();
-        String idopont = null;
-
-        if (dto.getNapokIdopontok() != null) {
-            napok.addAll(dto.getNapokIdopontok().keySet());
-            // Feltételezzük, hogy minden napra ugyanaz az időpont
-            Optional<String> first = dto.getNapokIdopontok().values().stream().findFirst();
-            idopont = first.orElse(null);
-        }
-
-        gyak.setNapok(napok);
-        gyak.setIdoPont(idopont);
-*/
         // Mapstruct segítségével alakítjuk DTO → entitás
         List<TevekenysegIdopont> idopontok = mapper.mapDTOsToIdopontok(dto.getIdopontok());
         // Állítsuk be a gyakoriság kapcsolatot az időpontokban is
@@ -249,16 +205,7 @@ public class TevekenysegServiceImpl implements TevekenysegService{
 
         gyak.setGyakorisag(TevekenysegGyakorisag.Gyakorisag.valueOf(dto.getGyakorisag().toUpperCase()));
         gyak.setKezdoDatum(dto.getKezdoDatum());
-/*
-        if (dto.getNapokIdopontok() != null) {
-            gyak.setNapok(new ArrayList<>(dto.getNapokIdopontok().keySet()));
-            Optional<String> first = dto.getNapokIdopontok().values().stream().findFirst();
-            gyak.setIdoPont(first.orElse(null));
-        } else {
-            gyak.setNapok(null);
-            gyak.setIdoPont(null);
-        }
-*/
+
         // 🔄 Töröljük a meglévő időpontokat és újakat állítunk be
         gyak.getIdopontok().clear(); // csak ha CascadeType.ALL + orphanRemoval = true van beállítva!
         List<TevekenysegIdopont> ujIdopontok = mapper.mapDTOsToIdopontok(dto.getIdopontok());

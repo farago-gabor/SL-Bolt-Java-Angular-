@@ -1,5 +1,6 @@
 package hu.projekt.bolt.dto;
 
+import hu.projekt.bolt.model.Rendeles;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,10 +19,7 @@ public class RendelesDTO {
     private String telefonszam;
     private LocalDate hatarido;
 
-    private Boolean beerkezett = false;
-    private Boolean felreteve = false;
-    private Boolean szoltam = false;
-    private Boolean elvitte = false;
+    private Rendeles.Status status;
 
     private String dolgozoNev;
     private LocalDate felvetelDatum;

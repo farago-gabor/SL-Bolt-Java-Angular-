@@ -36,6 +36,7 @@ public class RendelesServiceImpl implements RendelesService{
         rendeles.setHatarido(hatarido);
         rendeles.setFelvetteDolgozo(dolgozoMapper.toEntity(dolgozoService.getDolgozoById(dolgozoId)));
         rendeles.setFelvetelDatum(LocalDate.now());
+        rendeles.setStatus(Rendeles.Status.NINCS);
 
         rendelesRepository.save(rendeles);
 
@@ -65,38 +66,26 @@ public class RendelesServiceImpl implements RendelesService{
     }
 
     @Override
-    public RendelesDTO modositStatusz(int id, boolean beerkezet, boolean felreteve, boolean szoltam, boolean elvitte) {
+    public RendelesDTO modositStatusz(int id, Rendeles.Status status) {
+
         Rendeles rendeles = rendelesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("A rendelés nem található"));
-
-
-        rendeles.setBeerkezett(beerkezet);
-        rendeles.setFelreteve(felreteve);
-        rendeles.setSzoltam(szoltam);
-        rendeles.setElvitte(elvitte);
-        rendelesRepository.save(rendeles);
-
-        RendelesDTO dto = rendelesMapper.rendelesToDto(rendeles);
-        dto.setTetelek(rendelesMapper.rendelesTetelListaToDto(rendelesTetelRepository.findByRendelesId(rendeles.getId())));
-
-        return dto;
-    }
-
-    /*
-    @Override
-    public RendelesDTO modositStatusz(int id, Status status) {
-        Rendeles rendeles = rendelesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("A rendelés nem található"));
-
 
         rendeles.setStatus(status);
 
+        rendelesRepository.save(rendeles);
+
         RendelesDTO dto = rendelesMapper.rendelesToDto(rendeles);
-        dto.setTetelek(rendelesMapper.rendelesTetelListaToDto(rendelesTetelRepository.findByRendelesId(rendeles.getId())));
+
+        dto.setTetelek(
+                rendelesMapper.rendelesTetelListaToDto(
+                        rendelesTetelRepository.findByRendelesId(rendeles.getId())
+                )
+        );
 
         return dto;
     }
-     */
+
 
     @Override
     public void torolRendeles(int id) {

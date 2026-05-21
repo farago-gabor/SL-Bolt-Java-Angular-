@@ -57,9 +57,30 @@ INSERT INTO arucikkek (cikkcsoport, megnevezes, vonalkod) VALUES
 ('Papírtermék', 'Cigi papír', '1112223334445');
 
 -- Rendelések
-INSERT INTO rendelesek (email, telefonszam, hatarido, beerkezett, felreteve, szoltam, elvitte, felvette_dolgozo_id, felvetel_datum) VALUES
-('vasarlo1@example.com', '06201234567', '2025-07-05', TRUE, TRUE, TRUE, FALSE, 2, '2025-06-30 14:00:00'),
-('vasarlo2@example.com', '06205555555', '2025-07-10', FALSE, FALSE, FALSE, FALSE, 2, '2025-07-01 10:30:00');
+INSERT INTO rendelesek (
+    email,
+    telefonszam,
+    hatarido,
+    status,
+    felvette_dolgozo_id,
+    felvetel_datum
+) VALUES
+(
+    'vasarlo1@example.com',
+    '06201234567',
+    '2025-07-05',
+    'SZOLTAM',
+    2,
+    '2025-06-30 14:00:00'
+),
+(
+    'vasarlo2@example.com',
+    '06205555555',
+    '2025-07-10',
+    'BEERKEZETT',
+    2,
+    '2025-07-01 10:30:00'
+);
 
 -- Rendelés tételek
 INSERT INTO rendeles_tetelek (rendeles_id, arucikk_id, mennyiseg, megjegyzes) VALUES
